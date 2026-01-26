@@ -1,0 +1,16 @@
+markdown-it-py>=3.0.0
+
+# Optional: YouTube API support (for --playlist-url feature)
+google-api-python-client>=2.0.0
+google-auth>=2.0.0
+google-auth-httplib2>=0.1.0
+
+# Optional: Web GUI support
+flask>=2.0.0
+
+# Excel Export
+openpyxl>=3.0.0
+
+# Mind Map / Knowledge Graph
+networkx>=3.0
+python-louvain>=0.16

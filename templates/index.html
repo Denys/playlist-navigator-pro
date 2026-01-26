@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Navigator Pro - Index & Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="{{ url_for('static', filename='js/store.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/mindmap.js') }}" defer></script>
+
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>🎬 Playlist Navigator Pro</h1>
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="indexer">
+                    📥 YouTube Indexer
+                </button>
+                <button class="tab-btn" data-tab="playlists">
+                    📚 Indexed Playlists
+                </button>
+                <button class="tab-btn" data-tab="search">
+                    🔍 Master Search
+                </button>
+                <button class="tab-btn" data-tab="gallery">
+                    🎬 Video Gallery
+                </button>
+                <button class="tab-btn" data-tab="store" onclick="initStore()">
+                    🏪 Video Store
+                </button>
+                <button class="tab-btn" data-tab="mindmap">
+                    🧠 Mind Map
+                </button>
+
+            </div>
+        </header>
+
+        <!-- Tab Content -->
+        <main class="app-main">
+            <!-- Tab 1: YouTube Playlist Indexer -->
+            <div class="tab-content active" id="indexer-tab">
+                <div class="content-container">
+                    <h2>Index YouTube Playlist</h2>
+                    <p class="subtitle">Extract and index playlist videos with descriptions and metadata</p>
+
+                    <form id="indexForm">
+                        <div class="input-group">
+                            <label for="playlistUrl">
+                                <span class="label-icon">🔗</span>
+                                Playlist URL
+                            </label>
+                            <input type="url" id="playlistUrl" name="playlistUrl"
+                                placeholder="https://youtube.com/playlist?list=..." required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="playlistName">
+                                <span class="label-icon">📝</span>
+                                Playlist Name
+                            </label>
+                            <input type="text" id="playlistName" name="playlistName" placeholder="My Important Playlist"
+                                required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>
+                                <span class="label-icon">🎨</span>
+                                Color Scheme
+                            </label>
+                            <div class="color-picker">
+                                <button type="button" class="color-option active" data-color="purple"
+                                    style="background: linear-gradient(135deg, #7e57c2, #5e35b1);">Purple</button>
+                                <button type="button" class="color-option" data-color="teal"
+                                    style="background: linear-gradient(135deg, #00897b, #00695c);">Teal</button>
+                                <button type="button" class="color-option" data-color="blue"
+                                    style="background: linear-gradient(135deg, #1976d2, #1565c0);">Blue</button>
+                                <button type="button" class="color-option" data-color="green"
+                                    style="background: linear-gradient(135deg, #388e3c, #2e7d32);">Green</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span>📥 Index Playlist</span>
+                        </button>
+                    </form>
+
+                    <div class="status-panel" id="statusPanel" style="display: none;">
+                        <p class="status-message" id="statusMessage">Ready</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">0%</p>
+                    </div>
+
+                    <div class="results-panel" id="resultsPanel" style="display: none;">
+                        <h3>✅ Indexing Complete!</h3>
+                        <div id="filesList"></div>
+                        <button class="secondary-btn" onclick="switchTab('playlists')">
+                            📚 View in Playlists
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Indexed Playlists Browser -->
+            <div class="tab-content" id="playlists-tab">
+                <div class="content-container full-width">
+                    <div id="playlistsView">
+                        <h2>Browse Indexed Playlists</h2>
+                        <p class="subtitle" id="playlistsSubtitle">View and browse all your indexed playlists</p>
+
+                        <div id="playlistsGrid" class="playlists-grid">
+                            <div class="empty-state">
+                                <div class="empty-icon">📚</div>
+                                <p>No playlists indexed yet</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Playlist Details View -->
+                    <div id="playlistDetails" style="display: none;">
+                        <button class="back-btn" onclick="closePlaylistDetails()">← Back to Playlists</button>
+
+                        <div class="playlist-header">
+                            <h2 id="detailPlaylistName">Playlist Name</h2>
+                            <div class="playlist-meta">
+                                <span id="detailVideoCount">0 videos</span>
+                                <span>•</span>
+                                <span id="detailCreatedAt">Created: --</span>
+                                <span>•</span>
+                                <a id="detailYouTubeLink" href="#" target="_blank">Open on YouTube</a>
+                                <span>•</span>
+                                <button class="share-btn" id="shareBtn" onclick="copyShareLink()">📤 Share</button>
+                                <button class="export-btn" id="exportBtn" onclick="exportToExcel()">📊 Export
+                                    Excel</button>
+                            </div>
+                        </div>
+
+                        <div class="video-list" id="playlistVideoList">
+                            <!-- Videos will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Master Playlist Search -->
+            <div class="tab-content" id="search-tab">
+                <div class="content-container">
+                    <h2>Search All Playlists</h2>
+                    <p class="subtitle" id="searchSubtitle">Search across all your indexed playlists</p>
+
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search videos, channels, tags..." />
+                        <button id="searchBtn">🔍 Search</button>
+                    </div>
+
+                    <div class="filters">
+                        <select id="playlistFilter">
+                            <option value="">All Playlists</option>
+                        </select>
+
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                        </select>
+                        <button id="searchExportBtn" class="secondary-btn" style="margin-left: auto;">📊 Export
+                            Results</button>
+                    </div>
+
+                    <div class="results-container" id="searchResults">
+                        <div class="empty-state">
+                            <div class="empty-icon">🔍</div>
+                            <p>Type to search across all playlists</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Video Gallery -->
+            <div class="tab-content" id="gallery-tab">
+                <div class="content-container full-width">
+                    <h2>All Videos Gallery</h2>
+                    <p class="subtitle" id="gallerySubtitle">Browse all indexed videos with thumbnails</p>
+
+                    <!-- Filter Controls -->
+                    <div class="gallery-filters">
+                        <input type="text" id="gallerySearch" placeholder="🔍 Search videos..." />
+                        <select id="galleryPlaylistFilter">
+                            <option value="">All Playlists</option>
+                        </select>
+                        <select id="gallerySortBy">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="title">Alphabetical</option>
+                            <option value="duration">By Duration</option>
+                        </select>
+                    </div>
+
+                    <!-- Video Grid -->
+                    <div id="videoGallery" class="video-gallery">
+                        <div class="empty-state">
+                            <div class="empty-icon">🎬</div>
+                            <p>Loading videos...</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Video Store -->
+                    <div class="tab-content" id="store-tab">
+                        <div class="content-container full-width">
+                            <h2>Video Store</h2>
+                            <p class="subtitle">Browse your collection by theme, genre, and more.</p>
+
+                            <!-- Categories Row -->
+                            <div class="store-categories" id="storeCategories">
+                                <!-- Categories injected by JS -->
+                            </div>
+
+                            <!-- Filter Bar -->
+                            <div class="store-toolbar">
+                                <div class="store-search">
+                                    <input type="text" id="storeSearchInput" placeholder="Search store...">
+                                </div>
+                                <div class="store-filters">
+                                    <select id="storeGenre">
+                                        <option value="">All Genres</option>
+                                    </select>
+                                    <select id="storeLength">
+                                        <option value="">All Lengths</option>
+                                    </select>
+                                    <select id="storeAuthor">
+                                        <option value="">All Author Types</option>
+                                    </select>
+                                </div>
+                                <div class="store-sort">
+                                    <select id="storeSort">
+                                        <option value="newest">Newest</option>
+                                        <option value="oldest">Oldest</option>
+                                        <option value="title">Title</option>
+                                        <option value="duration">Duration</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="store-status-bar">
+                                <span id="storeTotalCount">Loading...</span>
+                                <div class="loader" id="storeLoader" style="display:none;"></div>
+                            </div>
+
+                            <!-- Results Grid -->
+                            <div class="video-gallery" id="storeGrid">
+                                <!-- Results injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="quota-display" id="quotaDisplay">
+                <span class="quota-icon">📊</span>
+                <span>API Quota: <strong id="quotaRemaining">Loading...</strong> / 10,000</span>
+            </div>
+            <div class="footer-info">
+                <span id="statsInfo">No playlists indexed yet</span>
+            </div>
+        </footer>
+
+        <!-- Tab 5: Mind Map -->
+        <div class="tab-content" id="mindmap-tab">
+            <div class="content-container full-width">
+                <div class="playlist-header">
+                    <h2>🧠 Knowledge Graph</h2>
+                    <div class="playlist-meta">
+                        <span>Visualize connections between videos based on tags and channels</span>
+                    </div>
+                </div>
+                <div class="results-panel"
+                    style="background: white; border: 2px solid #e0e0e0; min-height: 800px; position: relative;">
+                    <div id="mindmap-container" style="width: 100%; height: 800px;">
+                        <!-- Graph will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

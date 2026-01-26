@@ -1,0 +1,30 @@
+# Environment and secrets
+.env
+credentials.json
+token.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project intermediates
+.tmp/
+
+# Optional: Uncomment to ignore output folder
+# output/

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ playlist.name }} - Playlist Index</title>
+    
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:title" content="{{ playlist.name }}">
+    <meta property="og:description" content="{{ playlist.video_count }} indexed videos from YouTube playlist">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .playlist-header {
+            background: linear-gradient(135deg, #7e57c2, #5e35b1);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(126, 87, 194, 0.3);
+        }
+
+        .playlist-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .playlist-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+        }
+
+        .playlist-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .playlist-meta a {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .playlist-meta a:hover {
+            opacity: 1;
+        }
+
+        /* Video List */
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .video-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(126, 87, 194, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .video-number {
+            color: #7e57c2;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #64b5f6;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .video-title:hover {
+            color: #90caf9;
+            text-decoration: underline;
+        }
+
+        .video-channel {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #9e9e9e;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .video-description {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #7e57c2;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .playlist-header {
+                padding: 24px 20px;
+            }
+
+            .playlist-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .video-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Playlist Header -->
+        <header class="playlist-header">
+            <h1>{{ playlist.name }}</h1>
+            <div class="playlist-meta">
+                <span>📹 {{ playlist.video_count }} videos</span>
+                <span>•</span>
+                <span>📅 Created: {{ playlist.created_at[:10] }}</span>
+                <span>•</span>
+                <a href="{{ playlist.youtube_url }}" target="_blank" rel="noopener">🔗 Open on YouTube</a>
+            </div>
+        </header>
+
+        <!-- Video List -->
+        <div class="video-list">
+            {% for video in videos %}
+            <article class="video-card">
+                <div class="video-number">{{ loop.index }}.</div>
+                <a href="{{ video.url }}" target="_blank" rel="noopener" class="video-title">
+                    🎬 {{ video.title }}
+                </a>
+                <div class="video-channel">
+                    👤 {{ video.channel }}
+                </div>
+                {% if video.description %}
+                <p class="video-description">{{ video.description[:300] }}{% if video.description|length > 300 %}...{% endif %}</p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Indexed with <a href="/">Playlist Manager</a></p>
+        </footer>
+    </div>
+</body>
+
+</html>

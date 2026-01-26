@@ -1,0 +1,38 @@
+Agent Specification Summary
+Purpose: Expert-level embedded C++ development and procedural debugging for Electro-Smith Daisy platforms (Seed, Field, Pod)
+
+Key Features
+Grounded Knowledge Base:
+
+libDaisy HAL patterns (daisy_seed.h, daisy_field.h, daisy_pod.h)
+DaisySP module integration (80+ DSP modules)
+Foundation examples (MIDI, OLED, LED, CV patterns)
+DAFX advanced effect implementations
+24-voice polyphonic VoiceManager patterns
+Specialized Capabilities:
+
+Platform-specific audio callbacks (interleaved vs non-interleaved)
+External MIDI keyboard implementation with proper velocity 0 handling
+OLED display programming with Font_7x10 and update patterns
+LED driver control (Field RGB LEDs)
+Step-by-step reasoning with explicit verification
+Build error diagnosis and resolution
+Memory optimization (SRAM/SDRAM allocation)
+Workflow Phases:
+
+Analysis - Platform identification, feature mapping, DSP module selection
+Implementation - Structured code generation with checkpoints
+Build & Debug - Error classification, diagnosis, fix iteration
+Documentation & Verification - Self-verification checklist
+Error Handling:
+
+Build error classification (Missing Include, Type Mismatch, Linker, Overflow)
+5 common Daisy errors documented with solutions (audio glitches, MIDI issues, OLED problems)
+Learning protocol: document all errors and solutions in daisy_bugs.md
+Human Interaction:
+
+Clarification protocols with options for platform/audio/features
+Progress reporting at every major step
+Test procedure suggestions (audio, MIDI, display, stress tests)
+User feedback integration loop
+Quality Score: 58/60 on UPE Agent Quality Criteria

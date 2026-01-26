@@ -1,0 +1,36 @@
+{
+  "output_dir": "output",
+  "generate_html": true,
+  "generate_pdf": true,
+  "color_scheme": "purple",
+  "auto_categorize": true,
+  "tag_suggestions": true,
+  "youtube_api_key": "AIzaSyDROEE1OCfj7JU5A5hea8vp9M-yAiK_RtM",
+  "description": "Configuration file for YouTube Playlist Indexer. Add your YouTube Data API v3 key to enable direct URL extraction.",
+  "color_schemes": {
+    "purple": {
+      "description": "Purple theme - good for general tech content",
+      "primary": "#7e57c2",
+      "secondary": "#5e35b1",
+      "background": "#f3e5f5"
+    },
+    "teal": {
+      "description": "Teal theme - good for audio/hardware content",
+      "primary": "#00897b",
+      "secondary": "#00695c",
+      "background": "#e0f2f1"
+    },
+    "blue": {
+      "description": "Blue theme - good for programming content",
+      "primary": "#1976d2",
+      "secondary": "#1565c0",
+      "background": "#e3f2fd"
+    },
+    "green": {
+      "description": "Green theme - good for educational content",
+      "primary": "#388e3c",
+      "secondary": "#2e7d32",
+      "background": "#e8f5e9"
+    }
+  }
+}

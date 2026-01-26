@@ -1,0 +1,8 @@
+{
+  "output_dir": "example_output",
+  "generate_html": true,
+  "generate_pdf": true,
+  "color_scheme": "teal",
+  "auto_categorize": true,
+  "tag_suggestions": true
+}
