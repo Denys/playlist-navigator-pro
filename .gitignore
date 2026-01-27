@@ -26,5 +26,39 @@ Thumbs.db
 # Project intermediates
 .tmp/
 
-# Optional: Uncomment to ignore output folder
-# output/
+# Build artifacts (PyInstaller)
+build/
+dist/
+*.spec
+*.manifest
+*.pdb
+
+# Agent/AI prompts (proprietary)
+_agentic_promts/
+AGENTS.md
+ANTIGRAVITY_SYSTEM_PROMPT_UPE_v2.md
+
+# Session/checkpoint files (internal)
+CHECKPOINT.md
+PLAYLIST_INDEXER_BUGS.md
+playlist_indexer_BUGS/
+
+# Archive folder
+.archive/
+
+# Test caches
+.pytest_cache/
+testse2e/
+testsfixtures/
+testsintegration/
+testsunit/
+
+# Output data (user-generated)
+output/
+
+# Orphaned/temp data files
+2511_3_playlist_data.json
+important_playlist_data.json
+
+# Misc text files
+*.txt

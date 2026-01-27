@@ -1,3 +1,85 @@
+# Project Checkpoint - 2026-01-27 (Session 7)
+
+## Status: Persistence Bug Fixed ✅
+
+### Session 7 Summary (2026-01-27)
+- **Bug Fixed**: Resolved critical persistence issues where API key and indexed playlists were lost after closing the app.
+    - **Root Cause #1**: `get_output_dir()` and config loading used relative paths that didn't resolve correctly in EXE context.
+    - **Root Cause #2**: `config.json` in `dist/PlaylistIndexer/` was missing the `youtube_api_key` field.
+    - **Fix**: Moved `get_app_root()` / `get_config_path()` to top of `web_app.py`, updated all path resolutions, added `config.json` to pyinstaller spec datas.
+- **Files Modified**:
+    - `web_app.py` — Centralized path helpers, instantiated `VideoStoreAPI` with correct path.
+    - `playlist_indexer.py` — Store absolute config path, resolve `output_dir` relative to config.
+    - `playlist_indexer.spec` — Added `config.json` to bundled datas.
+- **Verification**: Rebuilt EXE, confirmed playlists and API key persist after restart.
+
+### Next Steps
+- [ ] Explore Watch Progress Tracking feature.
+- [ ] Consider adding Dark Mode toggle.
+- [ ] Evaluate SQLite migration for larger collections.
+
+---
+
+# Project Checkpoint - 2026-01-26 (Session 6)
+
+## Status: Deployment Solutions Research & Launcher Scripts 🚀
+
+### Session 6 Summary (2026-01-26)
+- **Deployment Research**: Created comprehensive analysis of deployment options.
+    - Document: `DEPLOYMENT_OPTIONS_RESEARCH.md`
+    - Coverage: 14 deployment methods (local + cloud)
+    - Includes: Implementation time, cost, complexity, pros/cons for each
+    - Quick decision matrix for immediate reference
+- **Launcher Scripts**: Created Windows launcher tools.
+    - `start_app.bat` — Visible console launcher (debugging friendly)
+    - `start_app_silent.vbs` — Silent background launcher (no console window)
+    - `stop_app.bat` — Kill processes on port 5000
+- **Issue Encountered**:
+    - Virtual environment path validation needed
+    - "localhost refused to connect" when testing VBS launcher
+    - API Error 400 (concurrency) — resolved by sequential tool calls
+
+### Artifacts Created
+- `DEPLOYMENT_OPTIONS_RESEARCH.md` — Comprehensive deployment guide (reusable reference)
+- `start_app.bat` — Batch launcher with console
+- `start_app_silent.vbs` — VBS silent launcher
+- `stop_app.bat` — Stop script
+- `dist/PlaylistIndexer.exe` — **Standalone Application** (Single-file, no Python required).
+- **Issue Fixed**: `ModuleNotFoundError: No module named 'pydantic'` in EXE bundle (Added to hidden imports).
+
+### Packaging Success
+- **Packaging**: Application successfully packaged into a standalone Windows executable (`dist/PlaylistIndexer/PlaylistIndexer.exe`) using PyInstaller.
+- **Optimization**: Switched to `--onedir` mode and excluded heavy unused libraries (Torch, TensorFlow) to achieve instant startup.
+- **UX**: Implemented auto-launch browser feature and hidden console window.
+- **Critical Fix**: Patched `web_app.py` and `playlist_indexer.py` to fix persistence issues (API Key/Playlists lost on restart) by enforcing absolute path resolution relative to the executable.
+- **Documentation**: Updated `README.md` and `QUICK_START_GUIDE.md` with standalone usage instructions.
+
+## Next Steps
+- [ ] Share the `dist/PlaylistIndexer` folder (zipped) with users.
+- [ ] Monitor for any user-reported issues on different Windows machines.
+- [ ] Consider verifying `pydantic` version compatibility if upgrading Python in the future (current fix works).
+
+---
+
+# Project Checkpoint - 2026-01-26 (Session 5)
+
+## Status: Rebranding & GitHub Push ✅
+
+### Session 5 Summary (2026-01-26)
+- **Rebranding**: Renamed application from "YouTube Playlist Indexer" to "**Playlist Navigator Pro**".
+    - Updated: `README.md`, `QUICK_START_GUIDE.md`, `web_app.py`, `index.html`, `run.sh`.
+    - Strategy: Branding-only update (filenames preserved to maintain stability).
+- **Version Control**:
+    - Initialized Git repository.
+    - Pushed to GitHub: [https://github.com/Denys/playlist-navigator-pro](https://github.com/Denys/playlist-navigator-pro)
+    - Branch: `main`
+
+### Artifacts Updated
+- `task.md` — Completed all initialization and push tasks.
+- `README.md` — Reflected new product name.
+
+---
+
 # Project Checkpoint - 2026-01-26 (Session 4)
 
 ## Status: Web App Integration & Robustness ✅

@@ -9,6 +9,7 @@ from threading import Thread
 import datetime # Added to fix datetime.datetime.utcnow()
 import uuid
 import time
+import sys
 import os
 import json
 from io import BytesIO # Added as per instruction
@@ -22,7 +23,26 @@ from execution.utils import check_duplicate_playlist
 from execution.models import VideoData
 
 
-app = Flask(__name__)
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+if getattr(sys, 'frozen', False):
+    # Running in a bundle
+    template_folder = resource_path('templates')
+    static_folder = resource_path('static')
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+else:
+    # Running in normal Python environment
+    app = Flask(__name__)
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     """Custom JSON Encoder that handles datetime objects."""
@@ -33,12 +53,26 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 app.json_encoder = CustomJSONEncoder # For Flask < 2.2 compatibility (optional but good)
 
+
+def get_app_root():
+    """Get the application root directory."""
+    if getattr(sys, 'frozen', False):
+        # If frozen (exe), save next to the executable
+        return os.path.dirname(sys.executable)
+    else:
+        # If dev, save in current working directory
+        return os.getcwd()
+
+def get_config_path():
+    """Get absolute path to config.json."""
+    return os.path.join(get_app_root(), 'config.json')
+
 # Job tracking for indexing
 jobs = {}
 enricher = MetadataEnricher()
 delta_sync = DeltaSync(enricher)
 tag_manager = TagManager()
-store_api = VideoStoreAPI()
+store_api = VideoStoreAPI(output_dir=os.path.join(get_app_root(), 'output'))
 
 
 
@@ -149,7 +183,8 @@ def delta_sync_playlist(playlist_id):
                                             if v.get('sync_status', {}).get('exists_at_source', True)])
         playlist_info['last_updated'] = datetime.datetime.utcnow().isoformat()
         
-        with open(os.path.join('output', 'playlists.json'), 'w', encoding='utf-8') as f:
+        base_dir = get_app_root()
+        with open(os.path.join(base_dir, 'output', 'playlists.json'), 'w', encoding='utf-8') as f:
             json.dump(registry, f, indent=2, ensure_ascii=False, cls=CustomJSONEncoder)
         
         return jsonify({
@@ -213,7 +248,7 @@ def get_quota():
     try:
         from youtube_api_extractor import YouTubeAPIExtractor
         
-        indexer = PlaylistIndexer()
+        indexer = PlaylistIndexer(config_file=get_config_path())
         api_key = indexer.config.get('youtube_api_key', '')
         
         if not api_key:
@@ -298,7 +333,8 @@ def _get_video_tags(video):
 @app.route('/api/playlists')
 def list_playlists():
     """Get list of all indexed playlists."""
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     
     if os.path.exists(registry_file):
         with open(registry_file, 'r', encoding='utf-8') as f:
@@ -311,7 +347,8 @@ def list_playlists():
 @app.route('/api/playlist/<playlist_id>')
 def get_playlist(playlist_id):
     """Get a single playlist with all its videos."""
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     
     if not os.path.exists(registry_file):
         return jsonify({'error': 'No playlists found'}), 404
@@ -342,7 +379,8 @@ def get_playlist(playlist_id):
 @app.route('/share/<playlist_id>')
 def share_playlist(playlist_id):
     """Render a shareable standalone page for a playlist."""
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     
     if not os.path.exists(registry_file):
         return "Playlist not found", 404
@@ -581,8 +619,11 @@ def remove_user_tag(video_id, tag_name):
     return jsonify({'status': 'success', 'video': target_video})
 
 
+
+
 def load_playlists_registry():
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     if os.path.exists(registry_file):
         with open(registry_file, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -615,7 +656,8 @@ def process_indexing_job(job):
         job.message = "Extracting playlist data from YouTube..."
         
         # Initialize indexer
-        indexer = PlaylistIndexer()
+        # Initialize indexer
+        indexer = PlaylistIndexer(config_file=get_config_path())
         indexer.config['color_scheme'] = job.color_scheme
         
         if hasattr(job, 'mode') and job.mode == 'overwrite':
@@ -660,7 +702,8 @@ def process_indexing_job(job):
 
 def register_playlist(name, output_dir, files, playlist_data, color_scheme, youtube_url):
     """Register a newly indexed playlist."""
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     
     # Load existing registry
     if os.path.exists(registry_file):
@@ -698,8 +741,18 @@ def register_playlist(name, output_dir, files, playlist_data, color_scheme, yout
     registry['last_updated'] = datetime.datetime.utcnow().isoformat() + 'Z'
     
     # Save registry
-    os.makedirs('output', exist_ok=True)
+    base_dir = get_app_root()
+    output_root = os.path.join(base_dir, 'output')
+    os.makedirs(output_root, exist_ok=True)
+    
+    # Ensure specific playlist output dir is absolute or relative to base
+    # If output_dir coming from indexer is relative 'output/name', we need to make it absolute for safety
+    if not os.path.isabs(output_dir):
+        output_dir = os.path.join(base_dir, output_dir)
+        
+    registry_file = os.path.join(output_root, 'playlists.json')
     with open(registry_file, 'w', encoding='utf-8') as f:
+
         json.dump(registry, f, indent=2, ensure_ascii=False, cls=CustomJSONEncoder)
     
     # Save video data for searching
@@ -718,7 +771,8 @@ def register_playlist(name, output_dir, files, playlist_data, color_scheme, yout
 def load_all_videos():
     """Load all videos from all indexed playlists."""
     all_videos = []
-    registry_file = os.path.join('output', 'playlists.json')
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
     
     if not os.path.exists(registry_file):
         return []
@@ -767,7 +821,18 @@ def store_search():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
+def open_browser():
+    """Open browser after a short delay to allow server to start."""
+    import webbrowser
+    time.sleep(1.5) # Wait for server to spin up
+    webbrowser.open('http://localhost:5000')
+
 if __name__ == '__main__':
     print("🚀 Starting Playlist Navigator Pro...")
     print("📍 Open your browser to: http://localhost:5000")
+    
+    # Launch browser in a separate thread
+    if not os.environ.get("WERKZEUG_RUN_MAIN"): # Prevent double open with reloader
+        Thread(target=open_browser).start()
+        
     app.run(debug=True, port=5000, threaded=True)

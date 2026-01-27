@@ -16,7 +16,8 @@ from typing import List, Dict, Any, Optional
 class PlaylistIndexer:
     def __init__(self, config_file: str = "config.json"):
         """Initialize the playlist indexer with configuration."""
-        self.config = self.load_config(config_file)
+        self.config_file_path = os.path.abspath(config_file)
+        self.config = self.load_config(self.config_file_path)
         self.video_data = []
         self.categories = {}
         self.tags = set()
@@ -696,7 +697,13 @@ This document is designed to be expandable. To add new videos:
         safe_name = re.sub(r'[^\w\s-]', '', playlist_name).strip()
         safe_name = re.sub(r'[-\s]+', '_', safe_name).lower()
         
-        output_dir = os.path.join(self.config['output_dir'], safe_name)
+        output_base = self.config['output_dir']
+        
+        # If output_dir is relative, make it relative to the config file (app root)
+        if not os.path.isabs(output_base):
+            output_base = os.path.join(os.path.dirname(self.config_file_path), output_base)
+            
+        output_dir = os.path.join(output_base, safe_name)
         os.makedirs(output_dir, exist_ok=True)
         
         return output_dir

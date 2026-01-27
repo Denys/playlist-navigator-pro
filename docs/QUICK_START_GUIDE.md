@@ -6,6 +6,18 @@
 
 ## ⚡ 3-Minute Setup
 
+### 🚀 Option A: Standalone Executable (Windows) - No Setup Required!
+
+1.  **Locate the Folder**: Go to `dist/PlaylistIndexer/`.
+2.  **Run**: Double-click `PlaylistIndexer.exe` inside that folder.
+3.  **Browse**: Open `http://localhost:5000` in your web browser.
+
+*That's it! No Python installation required. Startup is instant.*
+
+---
+
+### 🐍 Option B: Python Setup (Developers/Mac/Linux)
+
 ### 1. Install Dependencies
 
 ```bash
