@@ -1,0 +1,441 @@
+/**
+ * Liquid Glass Theme System - Playlist Navigator Pro
+ * Comprehensive theming variables for liquid glass design language
+ * 
+ * @version 2.0.0
+ * @author Playlist Navigator Pro Team
+ * 
+ * This file defines all design tokens for the 6-module liquid glass ecosystem:
+ * - Indexer: Translucent data cards, fluid categorization
+ * - Playlist: Glassmorphic drag-and-drop, ethereal navigation
+ * - Search: Frosted glass search bars, real-time overlays
+ * - Gallery: Liquid glass viewport frames, depth-based layering
+ * - Store: Crystalline product cards, transparent modals
+ * - Mind Map: Node networks with glass refraction, fluid connections
+ */
+
+/* ========================================
+   CSS CUSTOM PROPERTIES - ROOT
+   ======================================== */
+
+:root {
+  /* ========================================
+     CANVAS FOUNDATION - Layer 0
+     ======================================== */
+  
+  /**
+   * Deep oceanic canvas backgrounds
+   * Creates the immersive foundation for all modules
+   */
+  --liquid-canvas-1: #0a0a1a;
+  --liquid-canvas-2: #0f1629;
+  --liquid-canvas-3: #0a0e1f;
+  --liquid-canvas-4: #080c18;
+  
+  /* Noise texture opacity */
+  --liquid-noise-opacity: 0.025;
+  
+  /* ========================================
+     ACCENT COLOR SYSTEM
+     ======================================== */
+  
+  /**
+   * Primary accent palette for interactive elements
+   * Cyan: Primary actions, highlights
+   * Purple: Secondary accents, creativity
+   * Green: Success states, growth
+   * Pink: Warnings, important alerts
+   * Blue: Information, calm states
+   */
+  --liquid-accent-cyan: #00d9ff;
+  --liquid-accent-cyan-rgb: 0, 217, 255;
+  --liquid-accent-purple: #b829dd;
+  --liquid-accent-purple-rgb: 184, 41, 221;
+  --liquid-accent-green: #00ff88;
+  --liquid-accent-green-rgb: 0, 255, 136;
+  --liquid-accent-pink: #e94560;
+  --liquid-accent-pink-rgb: 233, 69, 96;
+  --liquid-accent-blue: #4facfe;
+  --liquid-accent-blue-rgb: 79, 172, 254;
+  
+  /* ========================================
+     GLASS HIERARCHY - 5 Layer System
+     ======================================== */
+  
+  /**
+   * Layer 1: Frosted Glass (3% opacity)
+   * Base containers, structural elements
+   */
+  --liquid-opacity-frosted: 0.03;
+  --liquid-blur-frosted: 8px;
+  --liquid-saturate-frosted: 180%;
+  --liquid-border-frosted: rgba(255, 255, 255, 0.05);
+  
+  /**
+   * Layer 2: Translucent Glass (6% opacity)
+   * Interactive elements, cards, buttons
+   */
+  --liquid-opacity-translucent: 0.06;
+  --liquid-blur-translucent: 16px;
+  --liquid-saturate-translucent: 200%;
+  --liquid-border-translucent: rgba(255, 255, 255, 0.08);
+  
+  /**
+   * Layer 3: Crystal Glass (10% opacity)
+   * Floating elements, elevated cards
+   */
+  --liquid-opacity-crystal: 0.10;
+  --liquid-blur-crystal: 24px;
+  --liquid-saturate-crystal: 220%;
+  --liquid-border-crystal: rgba(255, 255, 255, 0.12);
+  
+  /**
+   * Layer 4: Premium Glass (15% opacity)
+   * Detail panels, expanded cards, alerts
+   */
+  --liquid-opacity-premium: 0.15;
+  --liquid-blur-premium: 32px;
+  --liquid-saturate-premium: 250%;
+  --liquid-border-premium: rgba(255, 255, 255, 0.15);
+  
+  /**
+   * Layer 5: Diamond Glass (85% opacity)
+   * Modal overlays, critical alerts
+   */
+  --liquid-opacity-diamond: 0.85;
+  --liquid-blur-diamond: 40px;
+  --liquid-saturate-diamond: 250%;
+  --liquid-border-diamond: rgba(255, 255, 255, 0.20);
+  
+  /* ========================================
+     MODULE-SPECIFIC GLASS CONFIGURATIONS
+     ======================================== */
+  
+  /**
+   * Indexer Module - Intelligent Content Indexer
+   * Translucent data cards with fluid categorization
+   */
+  --indexer-card-bg: rgba(255, 255, 255, 0.06);
+  --indexer-card-border: rgba(0, 217, 255, 0.15);
+  --indexer-card-glow: rgba(0, 217, 255, 0.1);
+  --indexer-input-focus: rgba(0, 217, 255, 0.3);
+  --indexer-progress-gradient: linear-gradient(90deg, var(--liquid-accent-cyan), var(--liquid-accent-green));
+  
+  /**
+   * Playlist Module - Dynamic Playlist Management
+   * Glassmorphic drag-and-drop with ethereal navigation
+   */
+  --playlist-card-bg: rgba(255, 255, 255, 0.06);
+  --playlist-card-hover: rgba(255, 255, 255, 0.10);
+  --playlist-drag-bg: rgba(0, 217, 255, 0.15);
+  --playlist-drag-border: rgba(0, 217, 255, 0.4);
+  --playlist-nav-glow: rgba(0, 217, 255, 0.2);
+  
+  /**
+   * Search Module - Universal Master Search
+   * Frosted glass search bars with ambient lighting
+   */
+  --search-bar-bg: rgba(255, 255, 255, 0.08);
+  --search-bar-glow: rgba(184, 41, 221, 0.3);
+  --search-result-bg: rgba(255, 255, 255, 0.05);
+  --search-highlight: rgba(0, 217, 255, 0.25);
+  --search-ambient-light: radial-gradient(circle at var(--light-x, 50%) var(--light-y, 50%), rgba(184, 41, 221, 0.15) 0%, transparent 50%);
+  
+  /**
+   * Gallery Module - Immersive Video Gallery
+   * Liquid glass viewport frames with depth-based layering
+   */
+  --gallery-frame-bg: rgba(255, 255, 255, 0.04);
+  --gallery-frame-border: rgba(255, 255, 255, 0.08);
+  --gallery-hover-glow: rgba(0, 217, 255, 0.15);
+  --gallery-play-bg: rgba(255, 255, 255, 0.95);
+  --gallery-depth-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 217, 255, 0.1);
+  
+  /**
+   * Store Module - Cohesive Video Store
+   * Crystalline product cards with shimmering currency
+   */
+  --store-card-bg: rgba(255, 255, 255, 0.08);
+  --store-card-crystal: rgba(255, 255, 255, 0.12);
+  --store-modal-bg: rgba(15, 20, 35, 0.90);
+  --store-currency-shimmer: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.3), transparent);
+  --store-price-glow: rgba(0, 255, 136, 0.2);
+  
+  /**
+   * Mind Map Module - Interconnected Visualization
+   * Node networks with glass refraction and illuminated pathways
+   */
+  --mindmap-node-bg: rgba(0, 217, 255, 0.2);
+  --mindmap-node-glow: rgba(0, 217, 255, 0.4);
+  --mindmap-link-default: rgba(255, 255, 255, 0.15);
+  --mindmap-link-active: rgba(0, 217, 255, 0.6);
+  --mindmap-pathway-highlight: rgba(184, 41, 221, 0.5);
+  --mindmap-glass-refraction: blur(2px) saturate(150%);
+  
+  /* ========================================
+     TYPOGRAPHY SYSTEM
+     ======================================== */
+  
+  /* Font families */
+  --liquid-font-display: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+  --liquid-font-body: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  --liquid-font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+  
+  /* Font sizes - Fluid scale */
+  --liquid-text-xs: 0.75rem;      /* 12px */
+  --liquid-text-sm: 0.875rem;     /* 14px */
+  --liquid-text-base: 1rem;       /* 16px */
+  --liquid-text-md: 1.125rem;     /* 18px */
+  --liquid-text-lg: 1.5rem;       /* 24px */
+  --liquid-text-xl: 2rem;         /* 32px */
+  --liquid-text-2xl: 3rem;        /* 48px */
+  --liquid-text-3xl: 4rem;        /* 64px */
+  
+  /* Font weights */
+  --liquid-weight-light: 300;
+  --liquid-weight-normal: 400;
+  --liquid-weight-medium: 500;
+  --liquid-weight-semibold: 600;
+  --liquid-weight-bold: 700;
+  
+  /* Line heights */
+  --liquid-leading-tight: 1.25;
+  --liquid-leading-normal: 1.5;
+  --liquid-leading-relaxed: 1.75;
+  
+  /* ========================================
+     SPACING SCALE
+     ======================================== */
+  
+  --liquid-space-1: 0.25rem;      /* 4px */
+  --liquid-space-2: 0.5rem;       /* 8px */
+  --liquid-space-3: 0.75rem;      /* 12px */
+  --liquid-space-4: 1rem;         /* 16px */
+  --liquid-space-5: 1.5rem;       /* 24px */
+  --liquid-space-6: 2rem;         /* 32px */
+  --liquid-space-7: 3rem;         /* 48px */
+  --liquid-space-8: 4rem;         /* 64px */
+  --liquid-space-9: 6rem;         /* 96px */
+  --liquid-space-10: 8rem;        /* 128px */
+  
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  
+  --liquid-radius-sm: 0.5rem;     /* 8px */
+  --liquid-radius-md: 0.75rem;    /* 12px */
+  --liquid-radius-lg: 1rem;       /* 16px */
+  --liquid-radius-xl: 1.5rem;     /* 24px */
+  --liquid-radius-2xl: 2rem;      /* 32px */
+  --liquid-radius-3xl: 3rem;      /* 48px */
+  --liquid-radius-full: 9999px;   /* Pill shape */
+  
+  /* ========================================
+     ANIMATION TIMING
+     ======================================== */
+  
+  /* Duration scale */
+  --liquid-duration-instant: 100ms;
+  --liquid-duration-fast: 150ms;
+  --liquid-duration-base: 300ms;
+  --liquid-duration-slow: 500ms;
+  --liquid-duration-slower: 700ms;
+  --liquid-duration-ambient: 3000ms;
+  --liquid-duration-shimmer: 2000ms;
+  
+  /* Easing functions */
+  --liquid-ease-linear: linear;
+  --liquid-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --liquid-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --liquid-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --liquid-ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --liquid-ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --liquid-ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
+  --liquid-ease-morph: cubic-bezier(0.87, 0, 0.13, 1);
+  --liquid-ease-viscous: cubic-bezier(0.7, 0, 0.3, 1);
+  
+  /* ========================================
+     SHADOW DEPTH SYSTEM
+     ======================================== */
+  
+  /* Z-100: Subtle depth */
+  --liquid-shadow-1: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  /* Z-200: Medium depth for cards */
+  --liquid-shadow-2: 
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 16px 48px rgba(0, 0, 0, 0.15);
+  
+  /* Z-300: Elevated depth for floating elements */
+  --liquid-shadow-3: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 16px 48px rgba(0, 0, 0, 0.25),
+    0 32px 64px rgba(0, 0, 0, 0.2);
+  
+  /* Z-400: High elevation for hover states */
+  --liquid-shadow-4: 
+    0 12px 48px rgba(0, 0, 0, 0.35),
+    0 24px 64px rgba(0, 0, 0, 0.3),
+    0 48px 96px rgba(0, 0, 0, 0.25);
+  
+  /* Z-500: Maximum elevation for navigation */
+  --liquid-shadow-5: 
+    0 16px 64px rgba(0, 0, 0, 0.4),
+    0 32px 80px rgba(0, 0, 0, 0.35),
+    0 64px 128px rgba(0, 0, 0, 0.3);
+  
+  /* Modal shadows */
+  --liquid-shadow-modal: 
+    0 24px 96px rgba(0, 0, 0, 0.5),
+    0 48px 128px rgba(0, 0, 0, 0.4);
+  
+  /* Glow effects */
+  --liquid-shadow-glow-cyan: 
+    0 0 20px rgba(0, 217, 255, 0.3),
+    0 0 40px rgba(0, 217, 255, 0.2);
+  
+  --liquid-shadow-glow-purple: 
+    0 0 20px rgba(184, 41, 221, 0.3),
+    0 0 40px rgba(184, 41, 221, 0.2);
+  
+  --liquid-shadow-glow-green: 
+    0 0 20px rgba(0, 255, 136, 0.3),
+    0 0 40px rgba(0, 255, 136, 0.2);
+  
+  /* ========================================
+     Z-INDEX ARCHITECTURE
+     ======================================== */
+  
+  --liquid-z-canvas: 0;
+  --liquid-z-content: 10;
+  --liquid-z-glass-1: 100;
+  --liquid-z-glass-2: 200;
+  --liquid-z-glass-3: 300;
+  --liquid-z-elevated: 400;
+  --liquid-z-navigation: 500;
+  --liquid-z-dropdown: 750;
+  --liquid-z-modal: 1000;
+  --liquid-z-toast: 2000;
+  --liquid-z-tooltip: 9999;
+  
+  /* ========================================
+     LIGHT REFRACTION TRACKING
+     ======================================== */
+  
+  --light-x: 50%;
+  --light-y: 50%;
+  --light-intensity: 0.15;
+  
+  /* ========================================
+     ACCESSIBILITY
+     ======================================== */
+  
+  --liquid-focus-ring-width: 2px;
+  --liquid-focus-ring-color: var(--liquid-accent-cyan);
+  --liquid-focus-ring-offset: 2px;
+  
+  /* ========================================
+     HEADER CONFIGURATION
+     ======================================== */
+  
+  --liquid-header-height: 80px;
+  --liquid-header-padding: var(--liquid-space-4);
+  
+  /* ========================================
+     CONTAINER WIDTHS
+     ======================================== */
+  
+  --liquid-container-sm: 640px;
+  --liquid-container-md: 768px;
+  --liquid-container-lg: 1024px;
+  --liquid-container-xl: 1280px;
+  --liquid-container-2xl: 1536px;
+}
+
+/* ========================================
+   REDUCED MOTION PREFERENCES
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --liquid-duration-instant: 0.01ms;
+    --liquid-duration-fast: 0.01ms;
+    --liquid-duration-base: 0.01ms;
+    --liquid-duration-slow: 0.01ms;
+    --liquid-duration-slower: 0.01ms;
+    --liquid-duration-ambient: 0.01ms;
+    --liquid-duration-shimmer: 0.01ms;
+    
+    /* Disable blur effects for motion sensitivity */
+    --liquid-blur-frosted: 0px;
+    --liquid-blur-translucent: 0px;
+    --liquid-blur-crystal: 0px;
+    --liquid-blur-premium: 0px;
+    --liquid-blur-diamond: 0px;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE SUPPORT
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    /* Increase opacity for better visibility */
+    --liquid-opacity-frosted: 0.1;
+    --liquid-opacity-translucent: 0.15;
+    --liquid-opacity-crystal: 0.2;
+    --liquid-opacity-premium: 0.25;
+    
+    /* Stronger borders */
+    --liquid-border-frosted: rgba(255, 255, 255, 0.3);
+    --liquid-border-translucent: rgba(255, 255, 255, 0.4);
+    --liquid-border-crystal: rgba(255, 255, 255, 0.5);
+    --liquid-border-premium: rgba(255, 255, 255, 0.6);
+    
+    /* Accent colors more visible */
+    --liquid-accent-cyan: #00ffff;
+    --liquid-accent-purple: #ff00ff;
+    --liquid-accent-green: #00ff00;
+  }
+}
+
+/* ========================================
+   DARK MODE ENHANCEMENTS
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Slightly higher opacity for dark mode readability */
+    --liquid-opacity-frosted: 0.04;
+    --liquid-opacity-translucent: 0.08;
+    --liquid-opacity-crystal: 0.12;
+    --liquid-opacity-premium: 0.18;
+  }
+}
+
+/* ========================================
+   LIGHT MODE ADAPTATIONS
+   ======================================== */
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Adjusted canvas for light mode */
+    --liquid-canvas-1: #f0f4f8;
+    --liquid-canvas-2: #e2e8f0;
+    --liquid-canvas-3: #d1dce8;
+    
+    /* Darker text for light backgrounds */
+    --liquid-text-primary: #1a202c;
+    --liquid-text-secondary: #4a5568;
+    
+    /* Adjusted borders for light mode */
+    --liquid-border-frosted: rgba(0, 0, 0, 0.05);
+    --liquid-border-translucent: rgba(0, 0, 0, 0.08);
+    --liquid-border-crystal: rgba(0, 0, 0, 0.12);
+    --liquid-border-premium: rgba(0, 0, 0, 0.15);
+  }
+}

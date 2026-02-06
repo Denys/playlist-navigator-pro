@@ -98,6 +98,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/liquid-demo')
+def liquid_demo():
+    """Serve the Liquid Dynamics design system demo."""
+    return render_template('liquid-demo.html')
+
+
 @app.route('/api/index', methods=['POST'])
 def start_indexing():
     """Start a new indexing job."""
@@ -828,8 +834,8 @@ def open_browser():
     webbrowser.open('http://localhost:5000')
 
 if __name__ == '__main__':
-    print("🚀 Starting Playlist Navigator Pro...")
-    print("📍 Open your browser to: http://localhost:5000")
+    print("Starting Playlist Navigator Pro...")
+    print("Open your browser to: http://localhost:5000")
     
     # Launch browser in a separate thread
     if not os.environ.get("WERKZEUG_RUN_MAIN"): # Prevent double open with reloader

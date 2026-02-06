@@ -180,4 +180,26 @@
 
 ---
 
+## 💡 Fresh Ideas — Kilo Code Brainstorm Session
+
+| Idea | Description |
+|------|-------------|
+| **AI Video Summaries** | Auto-generate TL;DR of each video using transcript analysis |
+| **Transcript Search** | Search inside video transcripts for specific topics |
+| **Collaborative Playlists** | Share and co-curate playlists with friends/colleagues |
+| **Watch Party Mode** | Synchronized viewing with chat for remote learning groups |
+| **Voice Search** | "Find me that React tutorial about hooks" |
+| **Note Integration** | Export video notes to Notion/Obsidian with one click |
+| **Speed Watch Stats** | Track which videos you watched at 1.5x or 2x speed |
+| **Topic Cluster Map** | Visual bubble chart showing related topics across playlists |
+| **Duplicate Detector** | Find same video appearing in multiple playlists |
+| **Smart Merge** | Auto-combine similar playlists without duplicates |
+| **Auto-Tag Suggestions** | AI suggests tags based on video title/description |
+| **Intelligent Up Next** | Context-aware queue based on current learning path |
+| **Audio-Only Mode** | Extract audio streams for podcast-style listening |
+| **Creator Network Graph** | Visualize collaborations between YouTubers |
+| **Difficulty Progress Tracker** | Track skill progression from beginner to expert |
+
+---
+
 *This document is a living brainstorm. Add new ideas as they emerge!*

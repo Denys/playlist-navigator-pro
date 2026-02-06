@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-liquid-dynamics>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Navigator Pro - Liquid Dynamics Demo</title>
+    
+    <!-- Feature Detection (inline for best performance) -->
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/liquid-feature-detect.js') }}"></script>
+    
+    <!-- Liquid Dynamics CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='../liquid-dynamics/css/liquid-variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='../liquid-dynamics/css/liquid-core.css') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Demo-specific styles */
+        .demo-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            border-radius: 9999px;
+            color: var(--liquid-accent-cyan);
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+        
+        .demo-playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .demo-video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .demo-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(184, 41, 221, 0.2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .demo-section {
+            margin-bottom: 64px;
+        }
+        
+        .demo-section-title {
+            font-family: var(--liquid-font-display);
+            font-size: var(--liquid-text-lg);
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .demo-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            max-width: 800px;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="liquid-canvas">
+    <!-- Ambient Background Orbs -->
+    <div class="liquid-canvas-orb liquid-canvas-orb--cyan"></div>
+    <div class="liquid-canvas-orb liquid-canvas-orb--purple"></div>
+    <div class="liquid-canvas-orb liquid-canvas-orb--green"></div>
+    
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="liquid-skip-link">Skip to main content</a>
+    
+    <!-- Header -->
+    <header class="liquid-header">
+        <nav class="liquid-nav-float">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div class="liquid-nav-brand__icon">🎬</div>
+                <span style="font-family: var(--liquid-font-display); font-size: 1.5rem; font-weight: 700; color: #fff;">
+                    Playlist Navigator Pro
+                </span>
+                <span class="demo-badge">LIQUID DYNAMICS</span>
+            </div>
+            
+            <div class="liquid-nav-tabs">
+                <button class="liquid-nav-orb active" data-tab="indexer">📥 Indexer</button>
+                <button class="liquid-nav-orb" data-tab="playlists">📚 Playlists</button>
+                <button class="liquid-nav-orb" data-tab="gallery">🎬 Gallery</button>
+                <button class="liquid-nav-orb" data-tab="search">🔍 Search</button>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="liquid-main" id="main-content">
+        
+        <!-- Section 1: Playlist Cards Demo -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">
+                📚 Indexed Playlists
+                <span style="margin-left: auto; font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 400;">
+                    Hover for spring animation
+                </span>
+            </h2>
+            
+            <div class="demo-playlist-grid liquid-stagger" id="playlistGrid">
+                <!-- Playlist Card 1 -->
+                <div class="liquid-card-float liquid-glass-2" data-depth="2">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px;">
+                        <div class="demo-thumbnail">🎵</div>
+                    </div>
+                    <h3 class="liquid-card-title">Music Production Tutorials</h3>
+                    <p class="liquid-card-content">Learn music production from industry professionals</p>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                        <span class="liquid-badge-glass">24 videos</span>
+                        <span style="color: rgba(255,255,255,0.4); font-size: 14px;">Updated 2 days ago</span>
+                    </div>
+                </div>
+                
+                <!-- Playlist Card 2 -->
+                <div class="liquid-card-float liquid-glass-2" data-depth="2">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px;">
+                        <div class="demo-thumbnail" style="background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 217, 255, 0.2));">💻</div>
+                    </div>
+                    <h3 class="liquid-card-title">Web Development Course</h3>
+                    <p class="liquid-card-content">Full-stack web development from scratch</p>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                        <span class="liquid-badge-glass">48 videos</span>
+                        <span style="color: rgba(255,255,255,0.4); font-size: 14px;">Updated 1 week ago</span>
+                    </div>
+                </div>
+                
+                <!-- Playlist Card 3 -->
+                <div class="liquid-card-float liquid-glass-2" data-depth="2">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px;">
+                        <div class="demo-thumbnail" style="background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(184, 41, 221, 0.2));">🎨</div>
+                    </div>
+                    <h3 class="liquid-card-title">Digital Art Masterclass</h3>
+                    <p class="liquid-card-content">Create stunning digital illustrations</p>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                        <span class="liquid-badge-glass">36 videos</span>
+                        <span style="color: rgba(255,255,255,0.4); font-size: 14px;">Updated 3 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 2: Video Gallery Demo -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">🎬 Video Gallery</h2>
+            
+            <div class="demo-video-grid">
+                <!-- Video Card 1 -->
+                <div class="liquid-card-hover liquid-glass-2">
+                    <div class="liquid-video-thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">🎸</div>
+                        <span class="liquid-duration-badge">12:34</span>
+                        <div class="liquid-play-overlay">
+                            <div class="liquid-play-icon">▶</div>
+                        </div>
+                    </div>
+                    <h3 class="liquid-card-title" style="font-size: 16px; margin-bottom: 8px;">Guitar Basics: Chords 101</h3>
+                    <p class="liquid-card-content">Learn your first guitar chords</p>
+                </div>
+                
+                <!-- Video Card 2 -->
+                <div class="liquid-card-hover liquid-glass-2">
+                    <div class="liquid-video-thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">🥁</div>
+                        <span class="liquid-duration-badge">08:45</span>
+                        <div class="liquid-play-overlay">
+                            <div class="liquid-play-icon">▶</div>
+                        </div>
+                    </div>
+                    <h3 class="liquid-card-title" style="font-size: 16px; margin-bottom: 8px;">Drum Patterns Explained</h3>
+                    <p class="liquid-card-content">Understanding rhythm and timing</p>
+                </div>
+                
+                <!-- Video Card 3 -->
+                <div class="liquid-card-hover liquid-glass-2">
+                    <div class="liquid-video-thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">🎹</div>
+                        <span class="liquid-duration-badge">15:20</span>
+                        <div class="liquid-play-overlay">
+                            <div class="liquid-play-icon">▶</div>
+                        </div>
+                    </div>
+                    <h3 class="liquid-card-title" style="font-size: 16px; margin-bottom: 8px;">Piano Scales Masterclass</h3>
+                    <p class="liquid-card-content">Master all major and minor scales</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Forms Demo -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">📥 Index YouTube Playlist</h2>
+            
+            <form id="indexForm" class="demo-form-grid">
+                <div class="liquid-input-container liquid-glass-1" style="grid-column: 1 / -1;">
+                    <label class="liquid-label">Playlist URL</label>
+                    <input type="url" class="liquid-input-glass" placeholder="https://youtube.com/playlist?list=...">
+                    <div class="liquid-input-glow"></div>
+                </div>
+                
+                <div class="liquid-input-container liquid-glass-1">
+                    <label class="liquid-label">Playlist Name</label>
+                    <input type="text" class="liquid-input-glass" placeholder="My Playlist">
+                    <div class="liquid-input-glow"></div>
+                </div>
+                
+                <div class="liquid-input-container liquid-glass-1">
+                    <label class="liquid-label">Category</label>
+                    <input type="text" class="liquid-input-glass" placeholder="e.g., Music, Tech, Art">
+                    <div class="liquid-input-glow"></div>
+                </div>
+                
+                <div style="grid-column: 1 / -1;">
+                    <label class="liquid-label" style="margin-bottom: 12px;">Color Scheme</label>
+                    <div style="display: flex; gap: 16px;">
+                        <button type="button" class="liquid-color-orb selected" style="background: linear-gradient(135deg, #7e57c2, #5e35b1);" title="Purple"></button>
+                        <button type="button" class="liquid-color-orb" style="background: linear-gradient(135deg, #00897b, #00695c);" title="Teal"></button>
+                        <button type="button" class="liquid-color-orb" style="background: linear-gradient(135deg, #1976d2, #1565c0);" title="Blue"></button>
+                        <button type="button" class="liquid-color-orb" style="background: linear-gradient(135deg, #388e3c, #2e7d32);" title="Green"></button>
+                    </div>
+                </div>
+                
+                <div style="grid-column: 1 / -1; margin-top: 16px;">
+                    <button type="submit" class="liquid-btn-primary">
+                        <span>📥 Index Playlist</span>
+                    </button>
+                    <button type="button" class="liquid-btn-secondary" style="margin-left: 12px;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </section>
+        
+        <!-- Section 4: Progress & Status -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">📊 Progress & Status</h2>
+            
+            <div class="liquid-glass-1" style="padding: 24px; max-width: 600px;">
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 16px;">Indexing playlist...</p>
+                <div class="liquid-progress-liquid">
+                    <div class="liquid-progress-fill" style="width: 65%;"></div>
+                </div>
+                <p style="color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 12px;">65% complete (26 of 40 videos)</p>
+            </div>
+        </section>
+        
+        <!-- Section 5: List Items -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">📋 Playlist Videos</h2>
+            
+            <div class="liquid-glass-1" style="padding: 16px;">
+                <div class="liquid-list-item liquid-glass-1">
+                    <div class="liquid-list-item__thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">1</div>
+                    </div>
+                    <div class="liquid-list-item__content">
+                        <div class="liquid-list-item__title">Introduction to Music Theory</div>
+                        <div class="liquid-list-item__meta">12:34 • Music Theory Academy</div>
+                    </div>
+                    <span class="liquid-badge-glass">NEW</span>
+                </div>
+                
+                <div class="liquid-list-item liquid-glass-1">
+                    <div class="liquid-list-item__thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">2</div>
+                    </div>
+                    <div class="liquid-list-item__content">
+                        <div class="liquid-list-item__title">Understanding Rhythm</div>
+                        <div class="liquid-list-item__meta">08:45 • Music Theory Academy</div>
+                    </div>
+                </div>
+                
+                <div class="liquid-list-item liquid-glass-1">
+                    <div class="liquid-list-item__thumb">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">3</div>
+                    </div>
+                    <div class="liquid-list-item__content">
+                        <div class="liquid-list-item__title">Scales and Modes</div>
+                        <div class="liquid-list-item__meta">15:20 • Music Theory Academy</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 6: Empty State -->
+        <section class="demo-section">
+            <h2 class="demo-section-title">📭 Empty State</h2>
+            
+            <div class="liquid-empty-ethereal liquid-glass-1">
+                <div class="liquid-empty-ethereal__icon">📚</div>
+                <h3 class="liquid-empty-ethereal__title">No playlists indexed yet</h3>
+                <p class="liquid-empty-ethereal__text">Start by indexing your first YouTube playlist to see it here</p>
+                <button class="liquid-btn-primary">Index Your First Playlist</button>
+            </div>
+        </section>
+        
+    </main>
+    
+    <!-- Footer -->
+    <footer class="liquid-header" style="position: relative; margin: 0 32px 32px; top: 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px;">
+            <span style="color: rgba(255,255,255,0.5); font-size: 14px;">
+                📊 API Quota: <strong style="color: var(--liquid-accent-cyan);">9,847</strong> / 10,000
+            </span>
+            <span style="color: rgba(255,255,255,0.5); font-size: 14px;">
+                3 playlists • 108 videos indexed
+            </span>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/LiquidSpring.js') }}"></script>
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/LiquidParallax.js') }}"></script>
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/LiquidStagger.js') }}"></script>
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/LiquidBackdropManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='../liquid-dynamics/js/LiquidDynamics.js') }}"></script>
+    
+    <script>
+        // Initialize Liquid Dynamics
+        document.addEventListener('DOMContentLoaded', () => {
+            window.liquidDynamics = new LiquidDynamics({
+                debug: true,
+                features: {
+                    spring: true,
+                    parallax: true,
+                    stagger: true,
+                    backdropManager: true
+                }
+            });
+            
+            // Animate cards on load
+            const cards = document.querySelectorAll('.liquid-card-float, .liquid-card-hover');
+            liquidDynamics.animateIn(cards, {
+                direction: 'up',
+                baseDelay: 80,
+                duration: 500
+            });
+            
+            // Add parallax to background orbs
+            document.querySelectorAll('.liquid-canvas-orb').forEach((orb, index) => {
+                liquidDynamics.parallax(orb, {
+                    speed: 0.1 + (index * 0.05),
+                    direction: 'vertical'
+                });
+            });
+            
+            // Add spring hover effect to cards
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    liquidDynamics.spring(0, -8, (value) => {
+                        card.style.transform = `translateY(${value}px)`;
+                    }, { stiffness: 300, damping: 25 });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    liquidDynamics.spring(-8, 0, (value) => {
+                        card.style.transform = `translateY(${value}px)`;
+                    }, { stiffness: 300, damping: 25 });
+                });
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.liquid-nav-orb').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.liquid-nav-orb').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+            
+            // Color picker
+            document.querySelectorAll('.liquid-color-orb').forEach(orb => {
+                orb.addEventListener('click', () => {
+                    document.querySelectorAll('.liquid-color-orb').forEach(o => o.classList.remove('selected'));
+                    orb.classList.add('selected');
+                });
+            });
+            
+            console.log('🌊 Liquid Dynamics Demo initialized!');
+            console.log('Status:', liquidDynamics.getStatus());
+        });
+    </script>
+</body>
+</html>

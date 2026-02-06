@@ -1,0 +1,1076 @@
+/**
+ * Liquid Glass Components - Extended Stylesheet
+ * Playlist Navigator Pro Redesign
+ * 
+ * This file extends the liquid-dynamics system with component-specific styles
+ * for the redesigned frontend. It integrates with existing liquid-variables.css
+ * and liquid-core.css.
+ */
+
+/* ========================================
+   IMPORTS
+   ======================================== */
+
+@import url('../liquid-dynamics/css/liquid-variables.css');
+
+/* ========================================
+   DYNAMIC THEME VARIABLES
+   ======================================== */
+
+:root {
+  /* Extended glass opacity levels for runtime theming */
+  --glass-opacity-frosted: var(--liquid-opacity-1);
+  --glass-opacity-translucent: var(--liquid-opacity-2);
+  --glass-opacity-crystal: var(--liquid-opacity-3);
+  --glass-opacity-premium: var(--liquid-opacity-4);
+  --glass-opacity-diamond: var(--liquid-opacity-5);
+  
+  /* Dynamic tint colors (RGB format for rgba usage) */
+  --glass-tint-primary: 0, 217, 255;      /* Cyan */
+  --glass-tint-secondary: 184, 41, 221;   /* Purple */
+  --glass-tint-accent: 0, 255, 136;       /* Green */
+  --glass-tint-warm: 233, 69, 96;         /* Pink/Red */
+  
+  /* Light refraction tracking */
+  --light-x: 50%;
+  --light-y: 50%;
+  --light-intensity: 0.15;
+  
+  /* Animation speed multiplier */
+  --animation-speed: 1;
+  
+  /* Adaptive blur based on device capability */
+  --adaptive-blur-1: var(--liquid-blur-1);
+  --adaptive-blur-2: var(--liquid-blur-2);
+  --adaptive-blur-3: var(--liquid-blur-3);
+  --adaptive-blur-4: var(--liquid-blur-4);
+}
+
+/* ========================================
+   FLOATING NAVIGATION HEADER
+   ======================================== */
+
+.liquid-header-float {
+  position: fixed;
+  top: var(--liquid-space-4);
+  left: var(--liquid-space-4);
+  right: var(--liquid-space-4);
+  z-index: var(--liquid-z-navigation);
+  padding: var(--liquid-space-3) var(--liquid-space-5);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--liquid-radius-full);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-smooth);
+}
+
+.liquid-header-float.scrolled {
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 0;
+  background: rgba(10, 14, 31, 0.85);
+  padding: var(--liquid-space-3) var(--liquid-space-6);
+}
+
+.liquid-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--liquid-space-4);
+  max-width: var(--liquid-container-2xl);
+  margin: 0 auto;
+}
+
+.liquid-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-space-3);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.liquid-brand__icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, 
+    rgba(var(--glass-tint-primary), 0.8), 
+    rgba(var(--glass-tint-secondary), 0.8)
+  );
+  border-radius: var(--liquid-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(var(--glass-tint-primary), 0.3);
+}
+
+.liquid-brand__text {
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-md);
+  font-weight: var(--liquid-weight-bold);
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.liquid-brand__version {
+  font-weight: var(--liquid-weight-normal);
+  opacity: 0.6;
+  margin-left: var(--liquid-space-1);
+}
+
+/* Orb Navigation */
+.liquid-nav-orbs {
+  display: flex;
+  gap: var(--liquid-space-1);
+  padding: var(--liquid-space-1);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--liquid-radius-full);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.liquid-nav-orb {
+  padding: var(--liquid-space-2) var(--liquid-space-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--liquid-radius-full);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-sm);
+  font-weight: var(--liquid-weight-semibold);
+  cursor: pointer;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-liquid);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.liquid-nav-orb:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.liquid-nav-orb.active {
+  background: linear-gradient(
+    135deg, 
+    rgba(var(--glass-tint-primary), 0.3), 
+    rgba(var(--glass-tint-primary), 0.1)
+  );
+  color: rgb(var(--glass-tint-primary));
+  box-shadow: 
+    0 0 20px rgba(var(--glass-tint-primary), 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.liquid-nav-orb.active::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg, 
+    rgba(var(--glass-tint-primary), 0.5), 
+    transparent
+  );
+  opacity: 0.3;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+/* Mobile Menu Toggle */
+.liquid-menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--liquid-radius-md);
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all var(--liquid-duration-fast) var(--liquid-ease-smooth);
+}
+
+.liquid-menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* ========================================
+   PLAYLIST GRID SYSTEM
+   ======================================== */
+
+.liquid-grid-playlists {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--liquid-space-6);
+  padding: var(--liquid-space-2);
+}
+
+.liquid-card-playlist {
+  composes: liquid-glass-2;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-spring);
+  transform-style: preserve-3d;
+}
+
+.liquid-card-playlist:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 24px 64px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(var(--glass-tint-primary), 0.1);
+  border-color: rgba(var(--glass-tint-primary), 0.3);
+}
+
+.liquid-card-playlist:active {
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Light refraction effect on hover */
+.liquid-card-playlist::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--light-x, 50%) var(--light-y, 50%),
+    rgba(255, 255, 255, var(--light-intensity)) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--liquid-duration-base) var(--liquid-ease-smooth);
+  pointer-events: none;
+}
+
+.liquid-card-playlist:hover::after {
+  opacity: 1;
+}
+
+/* Playlist Card Header */
+.liquid-card-header {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-card-header__gradient {
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+  transition: transform calc(var(--liquid-duration-slow) * var(--animation-speed)) var(--liquid-ease-smooth);
+}
+
+.liquid-card-playlist:hover .liquid-card-header__gradient {
+  transform: scale(1.1);
+}
+
+.liquid-card-header__gradient--purple {
+  background: linear-gradient(135deg, #7e57c2 0%, #5e35b1 50%, #4527a0 100%);
+}
+
+.liquid-card-header__gradient--teal {
+  background: linear-gradient(135deg, #00897b 0%, #00695c 50%, #004d40 100%);
+}
+
+.liquid-card-header__gradient--blue {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 50%, #0d47a1 100%);
+}
+
+.liquid-card-header__gradient--green {
+  background: linear-gradient(135deg, #388e3c 0%, #2e7d32 50%, #1b5e20 100%);
+}
+
+.liquid-card-header__icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  opacity: 0.3;
+  filter: blur(0.5px);
+}
+
+/* Playlist Card Body */
+.liquid-card-body {
+  padding: var(--liquid-space-5);
+}
+
+.liquid-card-title {
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-md);
+  font-weight: var(--liquid-weight-semibold);
+  color: #ffffff;
+  margin-bottom: var(--liquid-space-2);
+  line-height: var(--liquid-leading-tight);
+}
+
+.liquid-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-space-3);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: var(--liquid-text-sm);
+}
+
+.liquid-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--liquid-space-1) var(--liquid-space-3);
+  background: rgba(var(--glass-tint-primary), 0.15);
+  border: 1px solid rgba(var(--glass-tint-primary), 0.3);
+  border-radius: var(--liquid-radius-full);
+  color: rgb(var(--glass-tint-primary));
+  font-family: var(--liquid-font-mono);
+  font-size: var(--liquid-text-xs);
+  font-weight: var(--liquid-weight-bold);
+}
+
+/* ========================================
+   VIDEO GALLERY CARDS
+   ======================================== */
+
+.liquid-grid-videos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--liquid-space-5);
+}
+
+.liquid-card-video {
+  composes: liquid-glass-2;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-spring);
+}
+
+.liquid-card-video:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 24px 64px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(var(--glass-tint-primary), 0.15);
+}
+
+.liquid-video-thumbnail {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.liquid-video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform calc(var(--liquid-duration-slow) * var(--animation-speed)) var(--liquid-ease-smooth);
+}
+
+.liquid-card-video:hover .liquid-video-thumbnail img {
+  transform: scale(1.08);
+}
+
+.liquid-video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity var(--liquid-duration-base) var(--liquid-ease-smooth);
+}
+
+.liquid-card-video:hover .liquid-video-overlay {
+  opacity: 1;
+}
+
+.liquid-video-play {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #000;
+  transform: scale(0.8);
+  transition: transform calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-spring);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.liquid-card-video:hover .liquid-video-play {
+  transform: scale(1);
+}
+
+.liquid-video-duration {
+  position: absolute;
+  bottom: var(--liquid-space-2);
+  right: var(--liquid-space-2);
+  padding: var(--liquid-space-1) var(--liquid-space-2);
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+  font-family: var(--liquid-font-mono);
+  font-size: var(--liquid-text-xs);
+  font-weight: var(--liquid-weight-semibold);
+  color: #ffffff;
+}
+
+.liquid-video-info {
+  padding: var(--liquid-space-4);
+}
+
+.liquid-video-title {
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-base);
+  font-weight: var(--liquid-weight-semibold);
+  color: #ffffff;
+  margin-bottom: var(--liquid-space-2);
+  line-height: var(--liquid-leading-tight);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.liquid-video-channel {
+  font-size: var(--liquid-text-sm);
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: var(--liquid-space-1);
+}
+
+.liquid-video-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-space-2);
+  font-size: var(--liquid-text-xs);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+
+.liquid-form-group {
+  margin-bottom: var(--liquid-space-5);
+}
+
+.liquid-input-wrap {
+  position: relative;
+  padding: var(--liquid-space-4) var(--liquid-space-5);
+  background: rgba(255, 255, 255, var(--glass-opacity-frosted));
+  backdrop-filter: blur(var(--adaptive-blur-1)) saturate(var(--liquid-saturate-1));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--liquid-radius-lg);
+  transition: all calc(var(--liquid-duration-fast) * var(--animation-speed)) var(--liquid-ease-smooth);
+}
+
+.liquid-input-wrap:focus-within {
+  border-color: rgba(var(--glass-tint-primary), 0.4);
+  box-shadow: 
+    0 0 30px rgba(var(--glass-tint-primary), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.liquid-label {
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-space-2);
+  margin-bottom: var(--liquid-space-2);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--liquid-text-sm);
+  font-weight: var(--liquid-weight-medium);
+  transition: color var(--liquid-duration-fast) var(--liquid-ease-smooth);
+}
+
+.liquid-input-wrap:focus-within .liquid-label {
+  color: rgb(var(--glass-tint-primary));
+}
+
+.liquid-input {
+  width: 100%;
+  padding: var(--liquid-space-2) 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: var(--liquid-font-body);
+  font-size: var(--liquid-text-base);
+  outline: none;
+  transition: border-color var(--liquid-duration-fast);
+}
+
+.liquid-input:focus {
+  border-bottom-color: rgb(var(--glass-tint-primary));
+}
+
+.liquid-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Color Picker Orbs */
+.liquid-color-picker {
+  display: flex;
+  gap: var(--liquid-space-3);
+  flex-wrap: wrap;
+}
+
+.liquid-color-orb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-spring);
+  position: relative;
+}
+
+.liquid-color-orb:hover {
+  transform: scale(1.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.liquid-color-orb.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 20px currentColor;
+}
+
+.liquid-color-orb.selected::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: var(--liquid-weight-bold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.liquid-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--liquid-space-2);
+  padding: var(--liquid-space-4) var(--liquid-space-6);
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-base);
+  font-weight: var(--liquid-weight-semibold);
+  border: none;
+  border-radius: var(--liquid-radius-full);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-liquid);
+}
+
+.liquid-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.liquid-btn:hover::before {
+  left: 100%;
+}
+
+.liquid-btn-primary {
+  composes: liquid-btn;
+  background: linear-gradient(
+    135deg, 
+    rgba(var(--glass-tint-primary), 0.3), 
+    rgba(var(--glass-tint-primary), 0.1)
+  );
+  border: 1px solid rgba(var(--glass-tint-primary), 0.4);
+  color: rgb(var(--glass-tint-primary));
+}
+
+.liquid-btn-primary:hover {
+  box-shadow: 
+    0 0 30px rgba(var(--glass-tint-primary), 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  border-color: rgba(var(--glass-tint-primary), 0.6);
+}
+
+.liquid-btn-primary:active {
+  transform: translateY(0);
+}
+
+.liquid-btn-secondary {
+  composes: liquid-btn;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.liquid-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.liquid-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ========================================
+   MODAL SYSTEM
+   ======================================== */
+
+.liquid-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 31, 0.85);
+  backdrop-filter: blur(var(--adaptive-blur-4));
+  z-index: var(--liquid-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--liquid-space-6);
+  opacity: 0;
+  visibility: hidden;
+  transition: 
+    opacity calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-smooth),
+    visibility calc(var(--liquid-duration-base) * var(--animation-speed));
+}
+
+.liquid-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.liquid-modal {
+  composes: liquid-glass-4;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: auto;
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: 
+    transform calc(var(--liquid-duration-slow) * var(--animation-speed)) var(--liquid-ease-spring),
+    opacity calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-smooth);
+}
+
+.liquid-modal-backdrop.active .liquid-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.liquid-modal__header {
+  padding: var(--liquid-space-5) var(--liquid-space-6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.liquid-modal__title {
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-md);
+  font-weight: var(--liquid-weight-semibold);
+  color: #ffffff;
+}
+
+.liquid-modal__close {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--liquid-radius-md);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all var(--liquid-duration-fast) var(--liquid-ease-smooth);
+}
+
+.liquid-modal__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.liquid-modal__body {
+  padding: var(--liquid-space-6);
+}
+
+.liquid-modal__footer {
+  padding: var(--liquid-space-4) var(--liquid-space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--liquid-space-3);
+}
+
+/* ========================================
+   PROGRESS INDICATORS
+   ======================================== */
+
+.liquid-progress {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.liquid-progress__bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--glass-tint-primary)),
+    rgb(var(--glass-tint-accent))
+  );
+  border-radius: 4px;
+  transition: width 0.5s var(--liquid-ease-liquid);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-progress__bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: liquid-shimmer 1.5s infinite;
+}
+
+@keyframes liquid-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ========================================
+   SEARCH INTERFACE
+   ======================================== */
+
+.liquid-search-hero {
+  text-align: center;
+  padding: var(--liquid-space-8) 0;
+}
+
+.liquid-search-box {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.liquid-search-input {
+  width: 100%;
+  height: 64px;
+  padding: 0 var(--liquid-space-6);
+  padding-right: 80px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--liquid-radius-full);
+  color: #ffffff;
+  font-family: var(--liquid-font-body);
+  font-size: var(--liquid-text-base);
+  outline: none;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-smooth);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 rgba(var(--glass-tint-primary), 0);
+}
+
+.liquid-search-input:focus {
+  border-color: rgba(var(--glass-tint-primary), 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(var(--glass-tint-primary), 0.2);
+}
+
+.liquid-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.liquid-search-btn {
+  position: absolute;
+  right: var(--liquid-space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-tint-primary), 0.8),
+    rgba(var(--glass-tint-secondary), 0.8)
+  );
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all var(--liquid-duration-fast) var(--liquid-ease-spring);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.liquid-search-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 20px rgba(var(--glass-tint-primary), 0.4);
+}
+
+/* ========================================
+   EMPTY STATES
+   ======================================== */
+
+.liquid-empty {
+  text-align: center;
+  padding: var(--liquid-space-9) var(--liquid-space-6);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(var(--glass-tint-primary), 0.05) 0%,
+    transparent 70%
+  );
+}
+
+.liquid-empty__icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto var(--liquid-space-5);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  animation: liquid-pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes liquid-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(var(--glass-tint-primary), 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(var(--glass-tint-primary), 0.2);
+  }
+}
+
+.liquid-empty__title {
+  font-family: var(--liquid-font-display);
+  font-size: var(--liquid-text-lg);
+  font-weight: var(--liquid-weight-semibold);
+  color: #ffffff;
+  margin-bottom: var(--liquid-space-3);
+}
+
+.liquid-empty__text {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: var(--liquid-space-5);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+   ======================================== */
+
+.liquid-toast {
+  position: fixed;
+  bottom: var(--liquid-space-6);
+  right: var(--liquid-space-6);
+  padding: var(--liquid-space-4) var(--liquid-space-6);
+  background: rgba(20, 25, 40, 0.95);
+  backdrop-filter: blur(var(--adaptive-blur-3));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--liquid-radius-lg);
+  box-shadow: var(--liquid-shadow-4);
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-space-4);
+  z-index: var(--liquid-z-toast);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all calc(var(--liquid-duration-base) * var(--animation-speed)) var(--liquid-ease-spring);
+}
+
+.liquid-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.liquid-toast--success {
+  border-color: rgba(var(--glass-tint-accent), 0.3);
+  box-shadow: 
+    var(--liquid-shadow-3),
+    0 0 20px rgba(var(--glass-tint-accent), 0.1);
+}
+
+.liquid-toast--error {
+  border-color: rgba(var(--glass-tint-warm), 0.3);
+  box-shadow: 
+    var(--liquid-shadow-3),
+    0 0 20px rgba(var(--glass-tint-warm), 0.1);
+}
+
+/* ========================================
+   RESPONSIVE ADAPTATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --adaptive-blur-1: 4px;
+    --adaptive-blur-2: 8px;
+    --adaptive-blur-3: 12px;
+    --adaptive-blur-4: 20px;
+  }
+  
+  .liquid-header-float {
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    padding: var(--liquid-space-2) var(--liquid-space-4);
+  }
+  
+  .liquid-nav-orbs {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: var(--liquid-space-2);
+    background: rgba(10, 14, 31, 0.98);
+    padding: var(--liquid-space-4);
+    border-radius: var(--liquid-radius-lg);
+    flex-direction: column;
+  }
+  
+  .liquid-nav-orbs.open {
+    display: flex;
+  }
+  
+  .liquid-menu-toggle {
+    display: flex;
+  }
+  
+  .liquid-grid-playlists,
+  .liquid-grid-videos {
+    grid-template-columns: 1fr;
+  }
+  
+  .liquid-search-hero {
+    padding: var(--liquid-space-6) 0;
+  }
+  
+  .liquid-modal {
+    max-height: 95vh;
+    margin: var(--liquid-space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .liquid-card-playlist:hover,
+  .liquid-card-video:hover {
+    transform: translateY(-4px);
+  }
+  
+  .liquid-brand__text {
+    font-size: var(--liquid-text-base);
+  }
+}
+
+/* Tablet adaptations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .liquid-grid-playlists {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .liquid-grid-videos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-speed: 0.01;
+  }
+  
+  .liquid-card-playlist,
+  .liquid-card-video,
+  .liquid-btn,
+  .liquid-nav-orb {
+    transition: none;
+  }
+  
+  .liquid-card-playlist:hover,
+  .liquid-card-video:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  .liquid-glass-1,
+  .liquid-glass-2,
+  .liquid-glass-3,
+  .liquid-glass-4 {
+    border-width: 2px;
+  }
+  
+  .liquid-input-wrap,
+  .liquid-card-playlist,
+  .liquid-card-video {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .liquid-nav-orb.active {
+    border: 2px solid rgb(var(--glass-tint-primary));
+  }
+}
+
+/* ========================================
+   NO BACKDROP-FILTER FALLBACK
+   ======================================== */
+
+.no-backdrop-filter .liquid-header-float,
+.no-backdrop-filter .liquid-card-playlist,
+.no-backdrop-filter .liquid-card-video,
+.no-backdrop-filter .liquid-input-wrap,
+.no-backdrop-filter .liquid-modal {
+  background: rgba(20, 25, 40, 0.95);
+  backdrop-filter: none;
+}

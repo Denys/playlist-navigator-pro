@@ -1,0 +1,376 @@
+/**
+ * Liquid Dynamics Design System - CSS Variables
+ * Playlist Navigator Pro - Glassmorphism Transformation
+ * 
+ * @version 1.0.0
+ * @author Playlist Navigator Pro Team
+ * @license MIT
+ * 
+ * This file defines all design tokens for the Liquid Dynamics visual system.
+ * It establishes a 5-layer glass hierarchy with increasing translucency.
+ */
+
+/* ========================================
+   ROOT VARIABLES
+   ======================================== */
+
+:root {
+  /* ========================================
+     COLOR SYSTEM - Canvas Backgrounds
+     ======================================== */
+  
+  /** 
+   * Deep oceanic canvas backgrounds 
+   * These create the dark, immersive foundation
+   */
+  --liquid-canvas-1: #0a0a1a;
+  --liquid-canvas-2: #0f1629;
+  --liquid-canvas-3: #0a0e1f;
+  
+  /* ========================================
+     COLOR SYSTEM - Gradient Accents
+     ======================================== */
+  
+  /**
+   * Accent colors for interactive elements and highlights
+   * These provide the "liquid" feel with cyan and purple tones
+   */
+  --liquid-accent-cyan: #00d9ff;
+  --liquid-accent-purple: #b829dd;
+  --liquid-accent-green: #00ff88;
+  --liquid-accent-pink: #e94560;
+  --liquid-accent-blue: #4facfe;
+  
+  /* ========================================
+     GLASS OPACITY SCALE (5-Layer Hierarchy)
+     ======================================== */
+  
+  /**
+   * Layer 1: Frosted - subtle blur for containers (3% opacity)
+   * Layer 2: Translucent - medium for cards/buttons (6% opacity)
+   * Layer 3: Crystal - high clarity for floating (10% opacity)
+   * Layer 4: Premium - elevated elements (15% opacity)
+   * Layer 5: Diamond - modals/overlays (85% opacity)
+   */
+  --liquid-opacity-1: 0.03;
+  --liquid-opacity-2: 0.06;
+  --liquid-opacity-3: 0.10;
+  --liquid-opacity-4: 0.15;
+  --liquid-opacity-5: 0.85;
+  
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  /**
+   * Font families optimized for glassmorphism UI
+   * - Display: Rajdhani for headers and titles
+   * - Body: Plus Jakarta Sans for readable content
+   * - Mono: IBM Plex Mono for technical data
+   */
+  --liquid-font-display: 'Rajdhani', 'Segoe UI', sans-serif;
+  --liquid-font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --liquid-font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+  
+  /* Font sizes with fluid scaling support */
+  --liquid-text-xs: 0.75rem;      /* 12px */
+  --liquid-text-sm: 0.875rem;     /* 14px */
+  --liquid-text-base: 1rem;       /* 16px */
+  --liquid-text-md: 1.25rem;      /* 20px */
+  --liquid-text-lg: 2rem;         /* 32px */
+  --liquid-text-xl: 3rem;         /* 48px */
+  --liquid-text-2xl: 4rem;        /* 64px */
+  
+  /* Font weights */
+  --liquid-weight-normal: 400;
+  --liquid-weight-medium: 500;
+  --liquid-weight-semibold: 600;
+  --liquid-weight-bold: 700;
+  
+  /* Line heights */
+  --liquid-leading-tight: 1.25;
+  --liquid-leading-normal: 1.5;
+  --liquid-leading-relaxed: 1.75;
+  
+  /* ========================================
+     SPACING SCALE
+     ======================================== */
+  
+  /**
+   * Consistent spacing using 4px base grid
+   */
+  --liquid-space-1: 0.25rem;      /* 4px */
+  --liquid-space-2: 0.5rem;       /* 8px */
+  --liquid-space-3: 0.75rem;      /* 12px */
+  --liquid-space-4: 1rem;         /* 16px */
+  --liquid-space-5: 1.5rem;       /* 24px */
+  --liquid-space-6: 2rem;         /* 32px */
+  --liquid-space-7: 3rem;         /* 48px */
+  --liquid-space-8: 4rem;         /* 64px */
+  --liquid-space-9: 6rem;         /* 96px */
+  --liquid-space-10: 8rem;        /* 128px */
+  
+  /* ========================================
+     GLASS BLUR SPECIFICATIONS
+     ======================================== */
+  
+  /**
+   * Backdrop blur radii for each glass layer
+   * Layer 1: 8px - subtle frost
+   * Layer 2: 16px - medium translucency
+   * Layer 3: 24px - high clarity
+   * Layer 4: 40px - maximum clarity for modals
+   */
+  --liquid-blur-1: 8px;
+  --liquid-blur-2: 16px;
+  --liquid-blur-3: 24px;
+  --liquid-blur-4: 40px;
+  
+  /* Saturation levels for glass vibrancy */
+  --liquid-saturate-1: 180%;
+  --liquid-saturate-2: 200%;
+  --liquid-saturate-3: 220%;
+  --liquid-saturate-4: 250%;
+  
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  
+  /**
+   * Organic, fluid border radius values
+   */
+  --liquid-radius-sm: 0.75rem;    /* 12px */
+  --liquid-radius-md: 1rem;       /* 16px */
+  --liquid-radius-lg: 1.5rem;     /* 24px */
+  --liquid-radius-xl: 2rem;       /* 32px */
+  --liquid-radius-2xl: 3rem;      /* 48px */
+  --liquid-radius-full: 9999px;   /* Pill shape */
+  
+  /* ========================================
+     ANIMATION TIMING
+     ======================================== */
+  
+  /**
+   * Duration scale for consistent motion
+   */
+  --liquid-duration-instant: 100ms;
+  --liquid-duration-fast: 150ms;
+  --liquid-duration-base: 300ms;
+  --liquid-duration-slow: 500ms;
+  --liquid-duration-slower: 700ms;
+  --liquid-duration-ambient: 3000ms;
+  
+  /* ========================================
+     FLUID PHYSICS EASINGS
+     ======================================== */
+  
+  /**
+   * Custom cubic-bezier curves for liquid dynamics feel
+   * These easings create organic, fluid motion
+   */
+  
+  /* Standard easings */
+  --liquid-ease-linear: linear;
+  --liquid-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --liquid-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --liquid-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  
+  /* Liquid Dynamics custom easings */
+  --liquid-ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --liquid-ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --liquid-ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
+  --liquid-ease-morph: cubic-bezier(0.87, 0, 0.13, 1);
+  --liquid-ease-viscous: cubic-bezier(0.7, 0, 0.3, 1);
+  --liquid-ease-ripple: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* ========================================
+     SPRING PHYSICS PARAMETERS
+     ======================================== */
+  
+  /**
+   * Physics-based animation configuration
+   * Stiffness: Higher = faster spring
+   * Damping: Higher = less oscillation
+   * Mass: Higher = more inertia
+   */
+  --liquid-spring-stiffness: 300;
+  --liquid-spring-damping: 30;
+  --liquid-spring-mass: 1;
+  --liquid-spring-precision: 0.01;
+  
+  /* Pre-configured spring presets */
+  --liquid-spring-gentle: 200, 25, 1;
+  --liquid-spring-snappy: 400, 30, 1;
+  --liquid-spring-bouncy: 300, 15, 1;
+  --liquid-spring-stiff: 500, 40, 1;
+  
+  /* ========================================
+     SHADOW DEPTH SYSTEM
+     ======================================== */
+  
+  /**
+   * Multi-layer shadows for z-depth perception
+   * Each level adds more depth and blur
+   */
+  
+  /* Z-100: Subtle depth for containers */
+  --liquid-shadow-1: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  /* Z-200: Medium depth for cards */
+  --liquid-shadow-2: 
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 16px 48px rgba(0, 0, 0, 0.15);
+  
+  /* Z-300: Elevated depth for floating elements */
+  --liquid-shadow-3: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 16px 48px rgba(0, 0, 0, 0.25),
+    0 32px 64px rgba(0, 0, 0, 0.2);
+  
+  /* Z-400: High elevation for hover states */
+  --liquid-shadow-4: 
+    0 12px 48px rgba(0, 0, 0, 0.35),
+    0 24px 64px rgba(0, 0, 0, 0.3),
+    0 48px 96px rgba(0, 0, 0, 0.25);
+  
+  /* Z-500: Maximum elevation for navigation */
+  --liquid-shadow-5: 
+    0 16px 64px rgba(0, 0, 0, 0.4),
+    0 32px 80px rgba(0, 0, 0, 0.35),
+    0 64px 128px rgba(0, 0, 0, 0.3);
+  
+  /* Modal shadows with dramatic depth */
+  --liquid-shadow-modal: 
+    0 24px 96px rgba(0, 0, 0, 0.5),
+    0 48px 128px rgba(0, 0, 0, 0.4);
+  
+  /* Glow effects for interactive elements */
+  --liquid-shadow-glow-cyan: 
+    0 0 20px rgba(0, 217, 255, 0.3),
+    0 0 40px rgba(0, 217, 255, 0.2);
+  
+  --liquid-shadow-glow-purple: 
+    0 0 20px rgba(184, 41, 221, 0.3),
+    0 0 40px rgba(184, 41, 221, 0.2);
+  
+  --liquid-shadow-glow-green: 
+    0 0 20px rgba(0, 255, 136, 0.3),
+    0 0 40px rgba(0, 255, 136, 0.2);
+  
+  /* ========================================
+     Z-INDEX ARCHITECTURE
+     ======================================== */
+  
+  /**
+   * Structured z-index hierarchy for layering
+   */
+  --liquid-z-canvas: 0;           /* Background layer */
+  --liquid-z-content: 10;         /* Scrollable content */
+  --liquid-z-glass-1: 100;        /* Frosted containers */
+  --liquid-z-glass-2: 200;        /* Translucent cards */
+  --liquid-z-glass-3: 300;        /* Crystal floating */
+  --liquid-z-elevated: 400;       /* Hover states */
+  --liquid-z-navigation: 500;     /* Fixed header/nav */
+  --liquid-z-dropdown: 750;       /* Dropdown menus */
+  --liquid-z-modal: 1000;         /* Modal overlays */
+  --liquid-z-toast: 2000;         /* Toast notifications */
+  --liquid-z-tooltip: 9999;       /* Tooltips/popovers */
+  
+  /* ========================================
+     GLASS BORDER OPACITIES
+     ======================================== */
+  
+  /**
+   * Border visibility for each glass layer
+   */
+  --liquid-border-1: rgba(255, 255, 255, 0.05);
+  --liquid-border-2: rgba(255, 255, 255, 0.08);
+  --liquid-border-3: rgba(255, 255, 255, 0.12);
+  --liquid-border-4: rgba(255, 255, 255, 0.15);
+  --liquid-border-accent: rgba(0, 217, 255, 0.3);
+  
+  /* ========================================
+     LAYOUT CONFIGURATION
+     ======================================== */
+  
+  /* Container max widths */
+  --liquid-container-sm: 640px;
+  --liquid-container-md: 768px;
+  --liquid-container-lg: 1024px;
+  --liquid-container-xl: 1280px;
+  --liquid-container-2xl: 1536px;
+  
+  /* Grid configuration */
+  --liquid-grid-gap: var(--liquid-space-5);
+  --liquid-grid-columns: 12;
+  
+  /* Header dimensions */
+  --liquid-header-height: 80px;
+  --liquid-header-padding: var(--liquid-space-4);
+  
+  /* ========================================
+     ACCESSIBILITY
+     ======================================== */
+  
+  /* Focus ring configuration */
+  --liquid-focus-ring-width: 2px;
+  --liquid-focus-ring-color: var(--liquid-accent-cyan);
+  --liquid-focus-ring-offset: 2px;
+  
+  /* Reduced motion preference */
+  --liquid-motion-duration: var(--liquid-duration-base);
+  --liquid-motion-easing: var(--liquid-ease-smooth);
+}
+
+/* ========================================
+   REDUCED MOTION PREFERENCES
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --liquid-duration-instant: 0.01ms;
+    --liquid-duration-fast: 0.01ms;
+    --liquid-duration-base: 0.01ms;
+    --liquid-duration-slow: 0.01ms;
+    --liquid-duration-slower: 0.01ms;
+    --liquid-duration-ambient: 0.01ms;
+    
+    --liquid-motion-duration: 0.01ms;
+    --liquid-spring-stiffness: 0;
+    --liquid-spring-damping: 0;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE SUPPORT
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --liquid-opacity-1: 0.1;
+    --liquid-opacity-2: 0.15;
+    --liquid-opacity-3: 0.2;
+    --liquid-opacity-4: 0.25;
+    
+    --liquid-border-1: rgba(255, 255, 255, 0.3);
+    --liquid-border-2: rgba(255, 255, 255, 0.4);
+    --liquid-border-3: rgba(255, 255, 255, 0.5);
+    --liquid-border-4: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ========================================
+   DARK MODE ENHANCEMENTS
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Enhance glass effects for dark mode */
+    --liquid-opacity-1: 0.04;
+    --liquid-opacity-2: 0.08;
+    --liquid-opacity-3: 0.12;
+  }
+}

@@ -1,0 +1,545 @@
+/**
+ * Liquid Glass Responsive Design System
+ * Adaptive layouts and glass-breaking animations for all breakpoints
+ * 
+ * @version 2.0.0
+ * 
+ * Breakpoints:
+ * - Mobile: < 480px
+ * - Tablet: 480px - 768px
+ * - Desktop: 768px - 1200px
+ * - Large: > 1200px
+ */
+
+@import url('liquid-theme.css');
+
+/* ========================================
+   MOBILE BREAKPOINT (< 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+  :root {
+    /* Reduced spacing for mobile */
+    --liquid-space-4: 0.875rem;
+    --liquid-space-5: 1.25rem;
+    --liquid-space-6: 1.5rem;
+    --liquid-space-8: 2.5rem;
+    
+    /* Reduced blur for performance */
+    --liquid-blur-frosted: 4px;
+    --liquid-blur-translucent: 8px;
+    --liquid-blur-crystal: 12px;
+    --liquid-blur-premium: 16px;
+    --liquid-blur-diamond: 24px;
+    
+    /* Smaller border radius */
+    --liquid-radius-lg: 0.875rem;
+    --liquid-radius-xl: 1.25rem;
+    --liquid-radius-2xl: 1.5rem;
+  }
+  
+  /* Canvas adjustments */
+  .liquid-canvas {
+    font-size: 14px;
+  }
+  
+  /* Header - Glass breaking animation */
+  .liquid-header {
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    padding: var(--liquid-space-3);
+    animation: liquid-glass-break 0.5s var(--liquid-ease-spring);
+  }
+  
+  @keyframes liquid-glass-break {
+    0% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .liquid-header__content {
+    flex-direction: column;
+    gap: var(--liquid-space-3);
+  }
+  
+  /* Mobile navigation - hamburger style */
+  .liquid-nav {
+    width: 100%;
+    justify-content: center;
+    padding: var(--liquid-space-1);
+  }
+  
+  .liquid-nav-orb {
+    padding: var(--liquid-space-2) var(--liquid-space-3);
+    font-size: var(--liquid-text-xs);
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .liquid-nav-orb span {
+    display: none;
+  }
+  
+  .liquid-nav-orb svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Main content */
+  .liquid-main {
+    padding-top: calc(var(--liquid-header-height) + var(--liquid-space-4));
+    padding-left: var(--liquid-space-3);
+    padding-right: var(--liquid-space-3);
+  }
+  
+  /* Grids - single column */
+  .liquid-playlist-grid,
+  .liquid-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: var(--liquid-space-4);
+  }
+  
+  /* Cards - full width */
+  .liquid-playlist-card,
+  .liquid-video-card,
+  .liquid-product-card {
+    max-width: 100%;
+  }
+  
+  /* Search bar - compact */
+  .liquid-search-input {
+    height: 56px;
+    font-size: var(--liquid-text-base);
+    padding-right: var(--liquid-space-6);
+  }
+  
+  .liquid-search-btn {
+    width: 44px;
+    height: 44px;
+    right: var(--liquid-space-1);
+  }
+  
+  /* Filter panel - stacked */
+  .liquid-filter-panel {
+    flex-direction: column;
+  }
+  
+  .liquid-filter-select {
+    width: 100%;
+  }
+  
+  /* Store categories - scrollable */
+  .liquid-store-categories {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-bottom: var(--liquid-space-2);
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .liquid-category-card {
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+  
+  /* Mind map - full screen feel */
+  .liquid-mindmap-container {
+    height: 500px;
+    border-radius: var(--liquid-radius-lg);
+  }
+  
+  .liquid-mindmap-controls {
+    flex-direction: column;
+    gap: var(--liquid-space-2);
+  }
+  
+  .liquid-mindmap-filters,
+  .liquid-mindmap-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Modal - full screen */
+  .liquid-store-modal {
+    position: fixed;
+    inset: 0;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    animation: liquid-modal-slide-up 0.4s var(--liquid-ease-spring);
+  }
+  
+  @keyframes liquid-modal-slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Toast - full width */
+  .liquid-toast {
+    left: var(--liquid-space-3);
+    right: var(--liquid-space-3);
+    bottom: var(--liquid-space-3);
+  }
+}
+
+/* ========================================
+   TABLET BREAKPOINT (480px - 768px)
+   ======================================== */
+
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    /* Moderate spacing */
+    --liquid-space-4: 0.9375rem;
+    --liquid-space-5: 1.375rem;
+    
+    /* Moderate blur */
+    --liquid-blur-frosted: 6px;
+    --liquid-blur-translucent: 12px;
+    --liquid-blur-crystal: 18px;
+    --liquid-blur-premium: 24px;
+    --liquid-blur-diamond: 32px;
+  }
+  
+  /* Header adjustments */
+  .liquid-header {
+    left: var(--liquid-space-2);
+    right: var(--liquid-space-2);
+    padding: var(--liquid-space-3) var(--liquid-space-4);
+  }
+  
+  .liquid-header__content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* Navigation - compact */
+  .liquid-nav {
+    order: 3;
+    width: 100%;
+    margin-top: var(--liquid-space-2);
+  }
+  
+  .liquid-nav-orb {
+    padding: var(--liquid-space-2) var(--liquid-space-4);
+    font-size: var(--liquid-text-sm);
+  }
+  
+  /* Main content */
+  .liquid-main {
+    padding-top: calc(var(--liquid-header-height) + var(--liquid-space-6));
+    padding-left: var(--liquid-space-4);
+    padding-right: var(--liquid-space-4);
+  }
+  
+  /* Grids - 2 columns */
+  .liquid-playlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .liquid-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Search adjustments */
+  .liquid-search-container {
+    padding: 0 var(--liquid-space-4);
+  }
+  
+  /* Filter panel - wrap */
+  .liquid-filter-panel {
+    justify-content: center;
+  }
+  
+  /* Store categories */
+  .liquid-store-categories {
+    justify-content: center;
+  }
+  
+  .liquid-category-card {
+    min-width: 130px;
+  }
+}
+
+/* ========================================
+   DESKTOP BREAKPOINT (768px - 1200px)
+   ======================================== */
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  /* Full effects */
+  :root {
+    --liquid-blur-frosted: 8px;
+    --liquid-blur-translucent: 16px;
+    --liquid-blur-crystal: 24px;
+    --liquid-blur-premium: 32px;
+    --liquid-blur-diamond: 40px;
+  }
+  
+  /* Grids - 3 columns */
+  .liquid-playlist-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .liquid-gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Main content */
+  .liquid-main {
+    padding-left: var(--liquid-space-6);
+    padding-right: var(--liquid-space-6);
+  }
+}
+
+/* ========================================
+   LARGE DESKTOP BREAKPOINT (> 1200px)
+   ======================================== */
+
+@media (min-width: 1201px) {
+  /* Maximum effects */
+  :root {
+    --liquid-blur-frosted: 10px;
+    --liquid-blur-translucent: 20px;
+    --liquid-blur-crystal: 28px;
+    --liquid-blur-premium: 36px;
+    --liquid-blur-diamond: 48px;
+  }
+  
+  /* Grids - 4 columns */
+  .liquid-playlist-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .liquid-gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  /* Enhanced visuals */
+  .liquid-orb--cyan {
+    width: 800px;
+    height: 800px;
+  }
+  
+  .liquid-orb--purple {
+    width: 700px;
+    height: 700px;
+  }
+  
+  /* Larger cards */
+  .liquid-playlist-card:hover {
+    transform: translateY(-12px) scale(1.03);
+  }
+}
+
+/* ========================================
+   ULTRAWIDE BREAKPOINT (> 1536px)
+   ======================================== */
+
+@media (min-width: 1537px) {
+  /* Container max width */
+  .liquid-container {
+    max-width: 1400px;
+  }
+  
+  /* Grids - 5 columns */
+  .liquid-playlist-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .liquid-gallery-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* ========================================
+   ADAPTIVE BLUR BASED ON DEVICE CAPABILITY
+   ======================================== */
+
+/* Low-power mode detection */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --liquid-blur-frosted: 0px;
+    --liquid-blur-translucent: 0px;
+    --liquid-blur-crystal: 0px;
+    --liquid-blur-premium: 0px;
+    --liquid-blur-diamond: 0px;
+  }
+  
+  .liquid-glass-1,
+  .liquid-glass-2,
+  .liquid-glass-3,
+  .liquid-glass-4,
+  .liquid-glass-5 {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(20, 25, 40, 0.95);
+  }
+  
+  .liquid-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(15, 22, 41, 0.98);
+  }
+  
+  .liquid-orb {
+    display: none;
+  }
+}
+
+/* Touch device detection - reduce effects for performance */
+@media (pointer: coarse) {
+  :root {
+    --liquid-blur-frosted: 4px;
+    --liquid-blur-translucent: 8px;
+    --liquid-blur-crystal: 12px;
+    --liquid-blur-premium: 16px;
+    --liquid-blur-diamond: 20px;
+  }
+  
+  /* Disable cursor-reactive effects */
+  .liquid-card-float::after,
+  .liquid-indexer-card::after,
+  .liquid-video-card::before {
+    display: none !important;
+  }
+  
+  /* Simpler hover states */
+  .liquid-playlist-card:hover,
+  .liquid-video-card:hover,
+  .liquid-product-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .liquid-glass-1,
+  .liquid-glass-2,
+  .liquid-glass-3,
+  .liquid-glass-4,
+  .liquid-glass-5 {
+    border-width: 2px;
+  }
+  
+  .liquid-nav-orb.active {
+    border: 2px solid var(--liquid-accent-cyan);
+  }
+}
+
+/* Print styles */
+@media print {
+  .liquid-canvas {
+    background: white;
+    color: black;
+  }
+  
+  .liquid-orb,
+  .liquid-header,
+  .liquid-nav {
+    display: none;
+  }
+  
+  .liquid-glass-1,
+  .liquid-glass-2,
+  .liquid-glass-3,
+  .liquid-glass-4 {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}
+
+/* ========================================
+   ORIENTATION SPECIFIC
+   ======================================== */
+
+/* Landscape on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .liquid-header {
+    position: relative;
+    margin-bottom: var(--liquid-space-4);
+  }
+  
+  .liquid-main {
+    padding-top: var(--liquid-space-4);
+  }
+  
+  .liquid-mindmap-container {
+    height: 400px;
+  }
+}
+
+/* ========================================
+   HOVER CAPABILITY DETECTION
+   ======================================== */
+
+@media (hover: none) {
+  /* Remove hover effects on touch devices */
+  .liquid-playlist-card:hover,
+  .liquid-video-card:hover,
+  .liquid-product-card:hover {
+    transform: none;
+    box-shadow: var(--liquid-shadow-2);
+  }
+  
+  /* Add active states instead */
+  .liquid-playlist-card:active,
+  .liquid-video-card:active,
+  .liquid-product-card:active {
+    transform: scale(0.98);
+  }
+  
+  .liquid-nav-orb:hover {
+    transform: none;
+  }
+  
+  .liquid-btn:hover::before {
+    display: none;
+  }
+}
+
+/* ========================================
+   DARK MODE ADJUSTMENTS
+   ======================================== */
+
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  /* Enhance visibility in dark mode on mobile */
+  :root {
+    --liquid-opacity-frosted: 0.05;
+    --liquid-opacity-translucent: 0.1;
+    --liquid-opacity-crystal: 0.15;
+  }
+}
+
+/* ========================================
+   SAFE AREA INSETS (Notch devices)
+   ======================================== */
+
+@supports (padding: max(0px)) {
+  .liquid-header {
+    padding-left: max(var(--liquid-space-4), env(safe-area-inset-left));
+    padding-right: max(var(--liquid-space-4), env(safe-area-inset-right));
+    padding-top: max(var(--liquid-space-4), env(safe-area-inset-top));
+  }
+  
+  .liquid-main {
+    padding-left: max(var(--liquid-space-4), env(safe-area-inset-left));
+    padding-right: max(var(--liquid-space-4), env(safe-area-inset-right));
+    padding-bottom: max(var(--liquid-space-6), env(safe-area-inset-bottom));
+  }
+}
