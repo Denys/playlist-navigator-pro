@@ -98,6 +98,27 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/sw.js')
+def service_worker():
+    """Serve service worker from root scope (required for PWA)."""
+    response = app.send_static_file('sw.js')
+    response.headers['Content-Type'] = 'application/javascript'
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
+
+
+@app.route('/offline')
+def offline():
+    """Serve offline fallback page."""
+    return render_template('offline.html')
+
+
+@app.route('/favicon.ico')
+def favicon():
+    """Serve favicon from PWA icons."""
+    return app.send_static_file('icons/icon-192.png')
+
+
 @app.route('/liquid-demo')
 def liquid_demo():
     """Serve the Liquid Dynamics design system demo."""
@@ -380,6 +401,35 @@ def get_playlist(playlist_id):
         'playlist': playlist,
         'videos': videos
     })
+
+@app.route('/playlist/<playlist_id>')
+def view_playlist(playlist_id):
+    """Render the main view for a single playlist."""
+    # Since we don't have a dedicated playlist.html template yet, let's reuse share.html
+    # for the time being, or redirect to share page, but better to render as standard view.
+    base_dir = get_app_root()
+    registry_file = os.path.join(base_dir, 'output', 'playlists.json')
+
+    if not os.path.exists(registry_file):
+        return "Playlist not found", 404
+
+    with open(registry_file, 'r', encoding='utf-8') as f:
+        registry = json.load(f)
+
+    playlist = next((p for p in registry['playlists'] if p['id'] == playlist_id), None)
+
+    if not playlist:
+        return "Playlist not found", 404
+
+    data_file = os.path.join(playlist['output_dir'], f"{playlist_id}_data.json")
+    videos = []
+
+    if os.path.exists(data_file):
+        with open(data_file, 'r', encoding='utf-8') as f:
+            videos = json.load(f)
+
+    # Note: If there's a specific 'playlist.html' in the future, use it here.
+    return render_template('share.html', playlist=playlist, videos=videos)
 
 
 @app.route('/share/<playlist_id>')
@@ -790,9 +840,12 @@ def load_all_videos():
         data_file = os.path.join(playlist['output_dir'], f"{playlist['id']}_data.json")
         
         if os.path.exists(data_file):
-            with open(data_file, 'r', encoding='utf-8') as f:
-                videos = json.load(f)
-                all_videos.extend(videos)
+            try:
+                with open(data_file, 'r', encoding='utf-8') as f:
+                    videos = json.load(f)
+                    all_videos.extend(videos)
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"WARNING: Skipping corrupt data file {data_file}: {e}")
     
     return all_videos
 

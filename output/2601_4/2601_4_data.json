@@ -63,4 +63,7 @@
     },
     "sync_status": {
       "exists_at_source": true,
-      "last_verified": 
+      "last_verified": null
+    }
+  }
+]

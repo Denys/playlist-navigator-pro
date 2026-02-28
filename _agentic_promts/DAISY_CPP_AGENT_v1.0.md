@@ -174,6 +174,48 @@ state:
 
 ## 3. GROUNDING KNOWLEDGE BASE
 
+### Tool Integration Strategy (Priority Cascade)
+
+#### Priority 1: Context7 MCP (ALWAYS FIRST)
+```
+mcp_context7_resolve-library-id("DaisySP")  → /electro-smith/DaisySP
+mcp_context7_query-docs(
+  libraryId="/electro-smith/DaisySP",
+  query="[module_name] Init Process"
+)
+```
+
+| Task | Query |
+|------|-------|
+| Synth | `"Oscillator Svf Adsr envelope"` |
+| Effect | `"[effect] Process wet dry"` |
+| Drums | `"AnalogBassDrum SynthSnareDrum HiHat"` |
+| Physical | `"StringVoice ModalVoice"` |
+
+#### Priority 2: Perplexity MCP
+```
+mcp_perplexity-ask_perplexity_ask(messages=[{
+  "role": "user",
+  "content": "Electrosmith Daisy [issue] site:forum.electro-smith.com"
+}])
+```
+
+#### Priority 3: Local Code Examples
+```
+grep_search(SearchPath="examples/dsp/core.txt", Query="[module]")
+grep_search(SearchPath="examples/dsp/advanced.txt", Query="[effect]")
+grep_search(SearchPath="examples/platforms/[platform].txt", Query="[feature]")
+```
+
+#### Tool Discovery (Dynamic)
+If unfamiliar module requested:
+1. `mcp_context7_resolve-library-id("DaisySP [module]")`
+2. Load only relevant tool definitions
+3. Execute with loaded subset
+4. Synthesize results
+
+---
+
 ### Reference Directory Structure
 
 ```
@@ -450,6 +492,49 @@ void UpdateDisplay() {
 // Call periodically in main loop (not in audio callback!)
 ```
 
+#### Advanced OLED Visualization (Zoom Pattern)
+
+Use this pattern for rich parameter feedback (pop-up value when knob changes):
+
+```cpp
+float prevKnob[8], currKnob[8];
+int zoomParam = -1;
+uint32_t zoomStartTime = 0;
+
+void CheckParameterChanges() {
+    for(int i=0; i<8; i++) {
+        if(fabsf(currKnob[i] - prevKnob[i]) > 0.02f) { // 2% hysteresis
+            zoomParam = i;
+            zoomStartTime = System::GetNow();
+            prevKnob[i] = currKnob[i];
+        }
+    }
+    // Dismiss popup after 1.2 seconds of inactivity
+    if(System::GetNow() - zoomStartTime > 1200) zoomParam = -1;
+}
+
+void DrawZoomedParameter() {
+    if(zoomParam == -1) return;
+    
+    // Draw popup overlay
+    hw.display.Fill(false); // Can also just clear rect if overlaying
+    
+    char valBuf[32];
+    float val = currKnob[zoomParam];
+    int percent = (int)(val * 100.f);
+    
+    // Example formatting
+    sprintf(valBuf, "Knob %d: %d%%", zoomParam + 1, percent);
+    
+    hw.display.SetCursor(0, 10);
+    hw.display.WriteString(valBuf, Font_11x18, true);
+    
+    // Large Progress Bar
+    int barWidth = (int)(val * 128.f);
+    hw.display.DrawRect(0, 35, barWidth, 50, true, true);
+}
+```
+
 #### LED Driver Pattern (Field)
 
 ```cpp
@@ -534,6 +619,7 @@ USE_DAISYSP_LGPL = 1
 | `.agent/daisy_memory/decisions.md` | Implementation decisions | Markdown |
 | `.agent/daisy_memory/patterns.md` | Learned patterns | Markdown |
 | `.agent/daisy_memory/test_results.md` | Test procedure results | Markdown |
+| `/code_to_dvpe_gaps/` | **C++ to DVPE gap analyses for Phase 13 Block Designer** | Markdown |
 
 ### Checkpoint Schema
 
@@ -1155,6 +1241,38 @@ Approach:
 Ready to assist with Daisy development.
 What would you like to build?
 ```
+
+---
+
+
+## 7. DAISY FIELD EXPERT CHECKLIST (v5.2 Standards)
+
+> **MANDATORY**: Verify these points for ALL Daisy Field projects.
+
+### 🔴 Critical (System Stability & Audio Quality)
+- [ ] **ADC Initialization**: `hw.StartAdc()` MUST be called before `hw.StartAudio()`.
+    - *Reason*: Prevents "frozen" knob readings (static display).
+- [ ] **Parameter Smoothing**: NEVER use raw `hw.knob[i].Process()` directly for audio parameters.
+    - *Requirement*: Use `daisysp::Fonepole` (coeff ~0.001f) or similar smoothing.
+    - *Reason*: Prevents "zipper noise" and clicks during parameter changes.
+- [ ] **Audio Safety**: NO `malloc`, `new`, `printf`, or heavy Loop logic inside `AudioCallback`.
+- [ ] **Non-Interleaved Audio**: Field uses `out[0][i]` (Left) and `out[1][i]` (Right), **NOT** `out[i]/out[i+1]`.
+
+### 🟡 User Experience (OLED & Controls)
+- [ ] **Dynamic Visualization**:
+    - *Standard*: Display "Overview" by default.
+    - *Action*: When a knob moves (>2% change), show **Focused Popup** (Large Text + Bar Graph) for 1-2 seconds.
+- [ ] **Units**: Display values in human-readable units (Hz, ms, %, dB), not just 0.0-1.0 float.
+- [ ] **Keyboard Interaction**:
+    - Use `hw.KeyboardRisingEdge(i)` for triggers (NoteOn, Mode Toggle).
+    - Use `hw.KeyboardState(i)` for gates/momentary actions.
+
+### 🟢 Code Architecture
+- [ ] **Separation of Concerns**:
+    - `main.cpp`: Hardware Init, Loop.
+    - `voice.cpp/h`: Pure DSP logic (no hardware refs).
+    - `ui_handler.cpp/h`: Bridges Hardware -> DSP (Process knobs, update voice).
+- [ ] **LGPL Compliance**: If using `ReverbSc`, `StringVoice`, etc., set `USE_DAISYSP_LGPL = 1` in Makefile.
 
 ---
 

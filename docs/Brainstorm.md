@@ -4,9 +4,16 @@
 
 ---
 
+## Create internal LLM assistant
+
+helps content analysis a search
+
+---
+
 ## 🔍 Creative Video Search Filters
 
 ### Time & Duration Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Quick Watch** | Videos under 5 minutes |
@@ -18,6 +25,7 @@
 | **Fresh Content** | Published in the last 30 days |
 
 ### Engagement & Quality Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Highly Rated** | Like ratio > 95% |
@@ -27,6 +35,7 @@
 | **Controversial** | High engagement but mixed sentiment |
 
 ### Content Type Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Tutorial Mode** | Instructional/how-to content |
@@ -38,6 +47,7 @@
 | **4K Available** | High-resolution content |
 
 ### Learning-Oriented Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Beginner Friendly** | Intro-level explanations |
@@ -48,6 +58,7 @@
 | **Certification Prep** | Exam/certification focused |
 
 ### Personal Progress Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Not Started** | Never watched |
@@ -58,6 +69,7 @@
 | **Recently Watched** | Viewed in last 7 days |
 
 ### Discovery Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Random Pick** | Surprise me with any video |
@@ -68,6 +80,7 @@
 | **Rabbit Hole** | Start a curated learning path |
 
 ### Metadata Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Has Description Links** | Contains resources/references |
@@ -78,6 +91,7 @@
 | **No Ads** | Ad-free content |
 
 ### Smart/AI Filters
+
 | Filter | Description |
 |--------|-------------|
 | **Auto-Tagged** | Filter by AI-generated tags |

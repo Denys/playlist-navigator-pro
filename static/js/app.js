@@ -53,11 +53,11 @@ document.querySelectorAll('.color-orb').forEach(btn => {
             b.classList.remove('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-transparent', 'opacity-100');
             b.classList.add('opacity-60');
         });
-        
+
         // Add selected state to clicked
         this.classList.remove('opacity-60');
         this.classList.add('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-transparent', 'opacity-100');
-        
+
         selectedColor = this.dataset.color;
     });
 });
@@ -175,7 +175,7 @@ async function loadPlaylistsGrid() {
             }[playlist.color_scheme] || 'from-purple-600 to-indigo-800';
 
             html += `
-                <div class="video-card glass-card overflow-hidden cursor-pointer group" onclick="openPlaylist('${playlist.id}")">
+                <div class="video-card glass-card overflow-hidden cursor-pointer group" onclick="openPlaylist('${playlist.id}')">
                     <div class="h-32 bg-gradient-to-br ${colorGradient} relative">
                         <div class="absolute inset-0 flex items-center justify-center">
                             <span class="text-6xl opacity-20">📚</span>
@@ -197,6 +197,10 @@ async function loadPlaylistsGrid() {
     } catch (error) {
         console.error('Failed to load playlists:', error);
     }
+}
+
+function openPlaylist(playlistId) {
+    window.open(`/playlist/${playlistId}`, '_blank');
 }
 
 // ==================== Search ====================
@@ -249,7 +253,7 @@ function displaySearchResults(results) {
     }
 
     let html = `<p class="text-white/60 mb-4">Found ${results.length} results</p>`;
-    
+
     results.forEach(video => {
         html += `
             <div class="glass-card p-4 mb-3 hover:bg-white/10 transition-colors cursor-pointer" onclick="window.open('${video.url}', '_blank')">
@@ -268,7 +272,7 @@ async function loadVideoGallery() {
     try {
         const response = await fetch('/api/videos/all');
         const data = await response.json();
-        
+
         const gallery = document.getElementById('videoGallery');
         if (!gallery) return;
 
@@ -316,7 +320,7 @@ async function loadVideoGallery() {
 function loadMindMap() {
     const container = document.getElementById('mindmap');
     if (!container) return;
-    
+
     // Placeholder for mind map visualization
     container.innerHTML = `
         <div class="text-center">
@@ -342,7 +346,7 @@ async function updateStats() {
     try {
         const response = await fetch('/api/playlists');
         const data = await response.json();
-        
+
         const statsEl = document.getElementById('statsInfo');
         if (statsEl) {
             statsEl.textContent = `${data.total_playlists || 0} playlists | ${data.total_videos || 0} videos`;

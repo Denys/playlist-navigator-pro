@@ -329,9 +329,119 @@
       "md_file": "output\\2601_4\\2601_4_index.md",
       "color_scheme": "blue",
       "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAYcEkNq-XgbKSZL7rEyXkmI&si=s3doJFNA4YiZoqZs"
+    },
+    {
+      "id": "2601_important_ported",
+      "name": "2601 important ported",
+      "created_at": "2026-02-28T05:17:06.322910Z",
+      "video_count": 40,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2601_important_ported",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2601_important_ported\\2601_important_ported_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2601_important_ported\\2601_important_ported_index.md",
+      "color_scheme": "green",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAbiu3on3LZI36DnTNjOsY4i&si=pzo7kDUQk7MMzzjj"
+    },
+    {
+      "id": "2602_ai_3",
+      "name": "2602_AI_3",
+      "created_at": "2026-02-26T15:05:22.218682Z",
+      "video_count": 5,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_3",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_3\\2602_ai_3_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_3\\2602_ai_3_index.md",
+      "color_scheme": "purple",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZ9BBO8j72RUWbW8LzBy6dS&si=OxNLRgFXH4LRLJs6"
+    },
+    {
+      "id": "2602_ai_2",
+      "name": "2602 AI 2",
+      "created_at": "2026-02-28T05:14:40.778053Z",
+      "video_count": 5,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_2",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_2\\2602_ai_2_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_2\\2602_ai_2_index.md",
+      "color_scheme": "blue",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZNTB7XwOkzi3R3M2lrRe5S&si=ooa2A55NlH1wZtzg"
+    },
+    {
+      "id": "2602_ai_1",
+      "name": "2602 AI 1",
+      "created_at": "2026-02-28T05:16:45.424684Z",
+      "video_count": 6,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_1",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_1\\2602_ai_1_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_ai_1\\2602_ai_1_index.md",
+      "color_scheme": "blue",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZSunyathSo-zItizJMLgaW&si=zkaPsM5aERhFhllo"
+    },
+    {
+      "id": "2512_2",
+      "name": "2512 2",
+      "created_at": "2026-02-28T05:17:54.951164Z",
+      "video_count": 32,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2512_2",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2512_2\\2512_2_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2512_2\\2512_2_index.md",
+      "color_scheme": "green",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAYM_03I84pHLsfYQRIUb8Nm&si=5JE4KSPnyK56hsX1"
+    },
+    {
+      "id": "2602",
+      "name": "2602",
+      "created_at": "2026-02-28T05:18:14.050485Z",
+      "video_count": 18,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602\\2602_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602\\2602_index.md",
+      "color_scheme": "green",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAaS1EZmUwwiIkzxZFGpjE-4&si=Qsig6CdunyfubyGc"
+    },
+    {
+      "id": "2602_2",
+      "name": "2602 2",
+      "created_at": "2026-02-28T05:18:26.866049Z",
+      "video_count": 30,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_2",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_2\\2602_2_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_2\\2602_2_index.md",
+      "color_scheme": "green",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZ39Wx6ikophY_mxhcA12Rj&si=dmy3QrwJOhtQ6g_D"
+    },
+    {
+      "id": "2504_tech",
+      "name": "2504 tech",
+      "created_at": "2026-02-28T05:18:55.908797Z",
+      "video_count": 31,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2504_tech",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2504_tech\\2504_tech_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2504_tech\\2504_tech_index.md",
+      "color_scheme": "teal",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZ6vO37Xd7sdJr8tupa0HCa&si=YZWz9VXW2cGIs5jI"
+    },
+    {
+      "id": "#_synth_development_1",
+      "name": "# Synth development 1",
+      "created_at": "2026-02-28T05:19:13.606037Z",
+      "video_count": 12,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\synth_development_1",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\synth_development_1\\#_synth_development_1_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\synth_development_1\\#_synth_development_1_index.md",
+      "color_scheme": "teal",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAaMf_4cj3QXY1gSV9z0MCy3&si=17F-qp37-DfEHomV"
+    },
+    {
+      "id": "2602_3",
+      "name": "2602 3",
+      "created_at": "2026-02-28T05:19:28.610557Z",
+      "video_count": 68,
+      "output_dir": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_3",
+      "html_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_3\\2602_3_index.html",
+      "md_file": "C:\\Users\\denko\\Gemini\\Antigravity\\playlist_indexer\\output\\2602_3\\2602_3_index.md",
+      "color_scheme": "green",
+      "youtube_url": "https://youtube.com/playlist?list=PL7C1_wJG8IAZRwaIfA-tEMqyKH68vBPnN&si=m04GFyBmMB6sdG_N"
     }
   ],
-  "total_playlists": 30,
-  "total_videos": 1476,
-  "last_updated": "2026-01-26T01:44:22.163901Z"
+  "total_playlists": 40,
+  "total_videos": 1723,
+  "last_updated": "2026-02-28T05:19:28.610587Z"
 }
