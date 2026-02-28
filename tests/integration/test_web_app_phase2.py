@@ -46,9 +46,10 @@ class TestWebAppIntegration:
         assert 'yt2' in data['youtube_tags'] # Legacy handling check
 
     @patch('web_app.load_playlists_registry')
+    @patch('web_app.get_data_backend', return_value='json')
     @patch('builtins.open', new_callable=mock_open, read_data='[{"video_id": "v1", "tags": {"user_defined": []}}]')
     @patch('os.path.exists', return_value=True)
-    def test_add_user_tag(self, mock_exists, mock_file, mock_registry, client):
+    def test_add_user_tag(self, mock_exists, mock_file, mock_backend, mock_registry, client):
         """Test adding a user tag."""
         mock_registry.return_value = {
             'playlists': [{'id': 'p1', 'output_dir': 'output'}]

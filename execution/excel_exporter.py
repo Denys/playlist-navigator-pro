@@ -106,7 +106,7 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
     )
     
     # Headers
-    headers = ["#", "Name", "Link", "Description", "Playlist", "Thematic", "Genre", "Length", "Author", "Tags"]
+    headers = ["#", "Name", "Link", "Description", "Notes", "Playlist", "Thematic", "Genre", "Length", "Author", "Tags"]
     for col, header in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col, value=header)
         cell.font = header_font
@@ -143,8 +143,14 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
         desc_cell.alignment = cell_alignment
         desc_cell.border = thin_border
         
+        # Notes
+        notes = str(video.get('notes', '') or '')
+        notes_cell = ws.cell(row=row, column=5, value=notes)
+        notes_cell.alignment = cell_alignment
+        notes_cell.border = thin_border
+
         # Playlist name
-        playlist_cell = ws.cell(row=row, column=5, value=video.get('playlist_name', ''))
+        playlist_cell = ws.cell(row=row, column=6, value=video.get('playlist_name', ''))
         playlist_cell.alignment = cell_alignment
         playlist_cell.border = thin_border
         
@@ -163,7 +169,7 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
              elif isinstance(thematic_data, str): # Legacy/Migration edge case
                  thematic = thematic_data
         
-        ws.cell(row=row, column=6, value=thematic).border = thin_border
+        ws.cell(row=row, column=7, value=thematic).border = thin_border
         
         # Genre
         genre = "Unknown"
@@ -172,13 +178,13 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
              if isinstance(genre_data, dict):
                  genre = genre_data.get('primary', 'Unknown')
         
-        ws.cell(row=row, column=7, value=genre).border = thin_border
+        ws.cell(row=row, column=8, value=genre).border = thin_border
         
         # Length Category
         length = "Unknown"
         if isinstance(metadata, dict):
             length = metadata.get('length_category', 'Unknown')
-        ws.cell(row=row, column=8, value=length).border = thin_border
+        ws.cell(row=row, column=9, value=length).border = thin_border
         
         # Author Type
         author_type = "Unknown"
@@ -186,7 +192,7 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
             author_type = video.get('author_type', 'Unknown') # Check if it's on root or metadata
             # Plan says metadata.author_type
             author_type = metadata.get('author_type', 'Unknown')
-        ws.cell(row=row, column=9, value=author_type).border = thin_border
+        ws.cell(row=row, column=10, value=author_type).border = thin_border
         
         # Tags (Combined)
         tags_raw = video.get('tags', [])
@@ -196,25 +202,26 @@ def export_to_excel(videos: List[Dict], output_path, playlist_name: str = "All P
         elif isinstance(tags_raw, list):
             tags_str = ", ".join(tags_raw)
             
-        ws.cell(row=row, column=10, value=tags_str).border = thin_border
+        ws.cell(row=row, column=11, value=tags_str).border = thin_border
     
     # Column widths
     ws.column_dimensions['A'].width = 5   # Index
     ws.column_dimensions['B'].width = 50  # Name
     ws.column_dimensions['C'].width = 45  # Link
     ws.column_dimensions['D'].width = 60  # Description - reduced slightly
-    ws.column_dimensions['E'].width = 25  # Playlist
-    ws.column_dimensions['F'].width = 20  # Thematic
-    ws.column_dimensions['G'].width = 15  # Genre
-    ws.column_dimensions['H'].width = 12  # Length
-    ws.column_dimensions['I'].width = 15  # Author
-    ws.column_dimensions['J'].width = 40  # Tags
+    ws.column_dimensions['E'].width = 40  # Notes
+    ws.column_dimensions['F'].width = 25  # Playlist
+    ws.column_dimensions['G'].width = 20  # Thematic
+    ws.column_dimensions['H'].width = 15  # Genre
+    ws.column_dimensions['I'].width = 12  # Length
+    ws.column_dimensions['J'].width = 15  # Author
+    ws.column_dimensions['K'].width = 40  # Tags
     
     # Freeze header row
     ws.freeze_panes = 'A2'
     
     # Add auto-filter
-    ws.auto_filter.ref = f"A1:J{len(videos) + 1}"
+    ws.auto_filter.ref = f"A1:K{len(videos) + 1}"
     
     # Save
     wb.save(output_path)

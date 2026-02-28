@@ -1,4 +1,10 @@
 {
+  "data_backend": "sqlite",
+  "sqlite_path": "output/playlist_indexer.db",
+  "auto_sync": {
+    "enabled": false,
+    "interval_minutes": 60
+  },
   "output_dir": "output",
   "generate_html": true,
   "generate_pdf": true,
@@ -6,6 +12,11 @@
   "auto_categorize": true,
   "tag_suggestions": true,
   "youtube_api_key": "AIzaSyDROEE1OCfj7JU5A5hea8vp9M-yAiK_RtM",
+  "assistant": {
+    "provider": "gemini",
+    "model": "gemini-3-flash-preview",
+    "api_key": "AIzaSyBCPmu9lWOlEtyb5tvBdZFGz9ydbi36erM"
+  },
   "description": "Configuration file for YouTube Playlist Indexer. Add your YouTube Data API v3 key to enable direct URL extraction.",
   "color_schemes": {
     "purple": {
