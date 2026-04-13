@@ -112,14 +112,11 @@ playlist-navigator-pro/
 
 ## ⚙️ Configuration
 
-Edit `config.json`:
+Store secrets in `.env` or environment variables:
 
-```json
-{
-  "youtube_api_key": "YOUR_API_KEY_HERE",
-  "output_dir": "output",
-  "color_scheme": "purple"
-}
+```bash
+YOUTUBE_API_KEY=YOUR_YOUTUBE_KEY
+GEMINI_API_KEY=YOUR_GEMINI_KEY
 ```
 
 ---

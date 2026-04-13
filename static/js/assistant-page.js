@@ -1,6 +1,5 @@
 (function () {
     const KEYS = {
-        apiKey: "pnp.assistant.apiKey",
         model: "pnp.assistant.model",
         provider: "pnp.assistant.provider",
         session: "pnp.assistant.session"
@@ -21,7 +20,7 @@
     }
 
     function restoreSettings() {
-        $("assistantApiKey").value = localStorage.getItem(KEYS.apiKey) || "";
+        localStorage.removeItem("pnp.assistant.apiKey");
         $("assistantModel").value = localStorage.getItem(KEYS.model) || "gemini-3-flash-preview";
         $("assistantProvider").value = localStorage.getItem(KEYS.provider) || "gemini";
         $("assistantSession").value = localStorage.getItem(KEYS.session) || "default";
@@ -29,7 +28,6 @@
     }
 
     function persistSettings() {
-        localStorage.setItem(KEYS.apiKey, $("assistantApiKey").value.trim());
         localStorage.setItem(KEYS.model, $("assistantModel").value.trim() || "gemini-3-flash-preview");
         localStorage.setItem(KEYS.provider, $("assistantProvider").value.trim() || "gemini");
         localStorage.setItem(KEYS.session, getSessionId());
@@ -98,7 +96,6 @@
         $("assistantStatus").textContent = "Thinking...";
         const payload = {
             message,
-            api_key: $("assistantApiKey").value.trim(),
             model: $("assistantModel").value.trim() || "gemini-3-flash-preview",
             provider: $("assistantProvider").value.trim() || "gemini",
             session_id: getSessionId(),
@@ -162,7 +159,7 @@
         $("assistantReload").addEventListener("click", loadHistory);
         $("assistantClearHistory").addEventListener("click", () => clearHistory(false));
         $("assistantClearAll").addEventListener("click", () => clearHistory(true));
-        ["assistantApiKey", "assistantModel", "assistantProvider", "assistantSession"].forEach((id) => {
+        ["assistantModel", "assistantProvider", "assistantSession"].forEach((id) => {
             $(id).addEventListener("change", persistSettings);
             $(id).addEventListener("blur", persistSettings);
         });

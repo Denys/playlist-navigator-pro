@@ -1,8 +1,11 @@
-﻿import datetime
+import datetime
 import json
 import os
 import tempfile
 from typing import Any
+
+
+_ENV_LOADED_DIRS = set()
 
 
 def read_json_file(path: str, default: Any):
@@ -15,6 +18,57 @@ def read_json_file(path: str, default: Any):
             return json.load(f)
     except (json.JSONDecodeError, OSError):
         return default
+
+
+def clean_secret_value(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    if text in {"YOUR_API_KEY_HERE", "YOUR_KEY_HERE", "CHANGE_ME", "SET_ME"}:
+        return ""
+    return text
+
+
+def load_dotenv_if_present(base_dir: str):
+    base_dir = os.path.abspath(base_dir)
+    if base_dir in _ENV_LOADED_DIRS:
+        return
+    _ENV_LOADED_DIRS.add(base_dir)
+
+    env_path = os.path.join(base_dir, ".env")
+    if not os.path.exists(env_path):
+        return
+
+    try:
+        with open(env_path, "r", encoding="utf-8") as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("export "):
+                    line = line[7:].strip()
+                if "=" not in line:
+                    continue
+
+                key, value = line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                if not key:
+                    continue
+                if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+                    value = value[1:-1]
+                os.environ.setdefault(key, value)
+    except OSError:
+        return
+
+
+def get_env_secret(base_dir: str, *names: str) -> str:
+    load_dotenv_if_present(base_dir)
+    for name in names:
+        value = clean_secret_value(os.environ.get(name, ""))
+        if value:
+            return value
+    return ""
 
 
 def _json_default(obj: Any):

@@ -38,17 +38,15 @@ pip install -r requirements.txt
 3. Create credentials → API Key
 4. Copy your key
 
-**Add to config:**
+**Set environment variable:**
 
-Edit `config.json` and replace the `youtube_api_key` value:
+Create a local `.env` file or set the variable in your shell:
 
-```json
-{
-  "youtube_api_key": "YOUR_API_KEY_HERE"
-}
+```bash
+YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 ```
 
-> **Note**: A demo key is included but may hit quota limits. Use your own for production!
+> **Note**: Do not commit API keys into `config.json` or source files.
 
 ---
 

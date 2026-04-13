@@ -78,7 +78,7 @@ Important runtime keys:
 - `sqlite_path`: SQLite DB path (relative or absolute)
 - `auto_sync.enabled`: scheduler on/off
 - `auto_sync.interval_minutes`: scheduler interval
-- `youtube_api_key`: required for playlist extraction
+- `youtube_api_key`: leave empty in repo config; set `YOUTUBE_API_KEY` in `.env` or the environment
 
 Example:
 ```json

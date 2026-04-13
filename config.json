@@ -11,13 +11,13 @@
   "color_scheme": "purple",
   "auto_categorize": true,
   "tag_suggestions": true,
-  "youtube_api_key": "AIzaSyDROEE1OCfj7JU5A5hea8vp9M-yAiK_RtM",
+  "youtube_api_key": "",
   "assistant": {
     "provider": "gemini",
     "model": "gemini-3-flash-preview",
-    "api_key": "AIzaSyBCPmu9lWOlEtyb5tvBdZFGz9ydbi36erM"
+    "api_key": ""
   },
-  "description": "Configuration file for YouTube Playlist Indexer. Add your YouTube Data API v3 key to enable direct URL extraction.",
+  "description": "Configuration file for Playlist Indexer. Store API keys in .env or environment variables, not in this file.",
   "color_schemes": {
     "purple": {
       "description": "Purple theme - good for general tech content",

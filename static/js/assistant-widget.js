@@ -1,6 +1,5 @@
 (function () {
     const KEYS = {
-        apiKey: "pnp.assistant.apiKey",
         model: "pnp.assistant.model",
         provider: "pnp.assistant.provider",
         session: "pnp.assistant.session"
@@ -66,7 +65,7 @@
                         <details>
                             <summary style="cursor:pointer;">Settings</summary>
                             <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                                <input id="assistantWidgetApiKey" type="password" placeholder="LLM API key (optional)">
+                                <div style="font-size:12px; opacity:.75;">Uses server-side credentials from <code>.env</code> or environment variables.</div>
                                 <div class="row">
                                     <select id="assistantWidgetProvider">
                                         <option value="gemini" selected>gemini</option>
@@ -101,7 +100,7 @@
     }
 
     function restoreSettings() {
-        document.getElementById("assistantWidgetApiKey").value = localStorage.getItem(KEYS.apiKey) || "";
+        localStorage.removeItem("pnp.assistant.apiKey");
         document.getElementById("assistantWidgetModel").value = localStorage.getItem(KEYS.model) || "gemini-3-flash-preview";
         document.getElementById("assistantWidgetProvider").value = localStorage.getItem(KEYS.provider) || "gemini";
         const fallbackSession = `widget:${window.location.pathname || "/"}`;
@@ -110,7 +109,6 @@
     }
 
     function persistSettings() {
-        localStorage.setItem(KEYS.apiKey, document.getElementById("assistantWidgetApiKey").value.trim());
         localStorage.setItem(KEYS.model, document.getElementById("assistantWidgetModel").value.trim() || "gemini-3-flash-preview");
         localStorage.setItem(KEYS.provider, document.getElementById("assistantWidgetProvider").value.trim() || "gemini");
         localStorage.setItem(KEYS.session, getSession());
@@ -173,7 +171,6 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     message,
-                    api_key: document.getElementById("assistantWidgetApiKey").value.trim(),
                     provider: document.getElementById("assistantWidgetProvider").value.trim() || "gemini",
                     model: document.getElementById("assistantWidgetModel").value.trim() || "gemini-3-flash-preview",
                     session_id: getSession(),
@@ -205,7 +202,7 @@
         });
         document.getElementById("assistantWidgetReload").addEventListener("click", loadHistory);
         document.getElementById("assistantWidgetClear").addEventListener("click", clearHistory);
-        ["assistantWidgetApiKey", "assistantWidgetModel", "assistantWidgetProvider", "assistantWidgetSession"].forEach((id) => {
+        ["assistantWidgetModel", "assistantWidgetProvider", "assistantWidgetSession"].forEach((id) => {
             document.getElementById(id).addEventListener("change", persistSettings);
             document.getElementById(id).addEventListener("blur", persistSettings);
         });

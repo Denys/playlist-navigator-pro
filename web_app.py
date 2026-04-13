@@ -24,7 +24,7 @@ from execution.tag_manager import TagManager
 from execution.video_store_api import VideoStoreAPI
 from execution.utils import check_duplicate_playlist
 from execution.models import VideoData
-from execution.io_utils import read_json_file, write_json_atomic
+from execution.io_utils import clean_secret_value, get_env_secret, read_json_file, write_json_atomic
 from execution.db import SQLiteStore
 
 
@@ -77,6 +77,14 @@ def load_runtime_config() -> Dict[str, Any]:
     """Load runtime config with safe fallback."""
     cfg = read_json_file(get_config_path(), {})
     return cfg if isinstance(cfg, dict) else {}
+
+
+def get_youtube_api_key(runtime_cfg: Optional[Dict[str, Any]] = None) -> str:
+    cfg = runtime_cfg if isinstance(runtime_cfg, dict) else load_runtime_config()
+    env_key = get_env_secret(get_app_root(), "PLAYLIST_INDEXER_YOUTUBE_API_KEY", "YOUTUBE_API_KEY")
+    if env_key:
+        return env_key
+    return clean_secret_value(cfg.get("youtube_api_key", ""))
 
 
 def get_data_backend() -> str:
@@ -188,7 +196,7 @@ def get_assistant_memory_path() -> str:
 
 
 def get_assistant_runtime_defaults() -> Dict[str, str]:
-    """Resolve assistant provider/model/api_key defaults from runtime config."""
+    """Resolve assistant provider/model/api_key defaults from env + runtime config."""
     cfg = load_runtime_config()
     assistant_cfg = cfg.get("assistant", {}) if isinstance(cfg, dict) else {}
     if not isinstance(assistant_cfg, dict):
@@ -204,7 +212,18 @@ def get_assistant_runtime_defaults() -> Dict[str, str]:
     model = str(
         assistant_cfg.get("model", provider_model_defaults.get(provider, "gemini-3-flash-preview"))
     ).strip() or provider_model_defaults.get(provider, "gemini-3-flash-preview")
-    api_key = str(assistant_cfg.get("api_key", "") or "").strip()
+    provider_env_names = {
+        "openai": ("OPENAI_API_KEY",),
+        "openrouter": ("OPENROUTER_API_KEY",),
+        "anthropic": ("ANTHROPIC_API_KEY",),
+        "gemini": ("GEMINI_API_KEY",),
+    }
+    api_key = get_env_secret(
+        get_app_root(),
+        *(provider_env_names.get(provider, ()) + ("PLAYLIST_INDEXER_ASSISTANT_API_KEY",)),
+    )
+    if not api_key:
+        api_key = clean_secret_value(assistant_cfg.get("api_key", ""))
     return {"provider": provider, "model": model, "api_key": api_key}
 
 
@@ -576,14 +595,10 @@ def job_status(job_id):
 def get_quota():
     """Get current YouTube API quota information."""
     try:
-        from youtube_api_extractor import YouTubeAPIExtractor
-        
-        indexer = PlaylistIndexer(config_file=get_config_path())
-        api_key = indexer.config.get('youtube_api_key', '')
-        
+        api_key = get_youtube_api_key()
         if not api_key:
             return jsonify({'remaining': 0, 'total': 10000, 'percentage': 0})
-        
+
         # Estimate remaining quota (would need actual Google Cloud API for real data)
         # For now, return static estimate
         return jsonify({

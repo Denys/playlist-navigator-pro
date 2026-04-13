@@ -13,6 +13,16 @@ from markdown_it import MarkdownIt
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
+from execution.io_utils import clean_secret_value, get_env_secret
+
+
+def resolve_youtube_api_key(config: Dict[str, Any], config_file_path: str) -> str:
+    base_dir = os.path.dirname(os.path.abspath(config_file_path))
+    env_key = get_env_secret(base_dir, "PLAYLIST_INDEXER_YOUTUBE_API_KEY", "YOUTUBE_API_KEY")
+    if env_key:
+        return env_key
+    return clean_secret_value(config.get("youtube_api_key", ""))
+
 class PlaylistIndexer:
     def __init__(self, config_file: str = "config.json"):
         """Initialize the playlist indexer with configuration."""
@@ -277,7 +287,7 @@ class PlaylistIndexer:
         Raises:
             Exception: If extraction fails with all methods
         """
-        api_key = self.config.get('youtube_api_key', '').strip()
+        api_key = resolve_youtube_api_key(self.config, self.config_file_path)
         
         # Method 1: Try YouTube API if key is available and user wants it
         if use_api and api_key:
@@ -319,11 +329,11 @@ class PlaylistIndexer:
         # For now, we'll raise an error to indicate it needs implementation
         raise NotImplementedError(
             "Browser automation fallback not yet implemented.\n"
-            "Please configure YouTube API key in config.json or use --input-file method.\n"
+            "Please set YOUTUBE_API_KEY (or PLAYLIST_INDEXER_YOUTUBE_API_KEY) or use --input-file method.\n"
             "\n"
             "To set up YouTube API:\n"
             "  1. Get API key from Google Cloud Console\n"
-            "  2. Add to config.json: {\"youtube_api_key\": \"YOUR_KEY_HERE\"}\n"
+            "  2. Set environment variable: YOUTUBE_API_KEY=YOUR_KEY_HERE\n"
             "  3. Run: pip install google-api-python-client"
         )
     

@@ -90,6 +90,7 @@ def test_assistant_llm_mode_with_mocked_provider(assistant_client, monkeypatch):
 
 
 def test_assistant_uses_runtime_defaults_when_payload_omits_provider_model_key(assistant_client, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "env-gemini-key")
     monkeypatch.setattr(
         web_app,
         "load_runtime_config",
@@ -98,7 +99,7 @@ def test_assistant_uses_runtime_defaults_when_payload_omits_provider_model_key(a
             "assistant": {
                 "provider": "gemini",
                 "model": "gemini-3-flash-preview",
-                "api_key": "embedded-key",
+                "api_key": "legacy-config-key",
             },
         },
     )
@@ -131,7 +132,7 @@ def test_assistant_uses_runtime_defaults_when_payload_omits_provider_model_key(a
     assert payload["model"] == "gemini-3-flash-preview"
     assert payload["answer"] == "runtime-defaults-ok"
     assert seen["provider"] == "gemini"
-    assert seen["api_key"] == "embedded-key"
+    assert seen["api_key"] == "env-gemini-key"
     assert seen["model"] == "gemini-3-flash-preview"
 
 
