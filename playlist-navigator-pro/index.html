@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Playlist Nav" />
+    <meta name="theme-color" content="#0a1a12" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ecfdf5" media="(prefers-color-scheme: light)" />
+    <link rel="apple-touch-icon" href="https://picsum.photos/seed/playlist/192" />
+    <title>Playlist Navigator Pro</title>
+    <style>
+      /* iOS safe area support */
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+        --sar: env(safe-area-inset-right);
+      }
+      
+      /* Prevent elastic scrolling on iOS */
+      body {
+        overscroll-behavior-y: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="liquid-glass-filter" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="3" result="noise" />
+          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.5 0" in="noise" result="coloredNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="coloredNoise" scale="10" xChannelSelector="R" yChannelSelector="G" result="displacement" />
+          <feGaussianBlur in="displacement" stdDeviation="1" result="blur" />
+          <feComposite in="blur" in2="SourceGraphic" operator="in" />
+        </filter>
+      </defs>
+    </svg>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

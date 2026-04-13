@@ -137,9 +137,22 @@
         }
     }
 
+    function generateSessionId() {
+        return Math.random().toString(36).substring(2, 10);
+    }
+
+    function newChat() {
+        $("assistantSession").value = "session-" + generateSessionId();
+        persistSettings();
+        renderHistory([]);
+        renderMemory({});
+        $("assistantStatus").textContent = "New chat initialized.";
+    }
+
     document.addEventListener("DOMContentLoaded", async () => {
         restoreSettings();
         $("assistantSend").addEventListener("click", sendMessage);
+        $("assistantNewChat").addEventListener("click", newChat);
         $("assistantInput").addEventListener("keydown", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();

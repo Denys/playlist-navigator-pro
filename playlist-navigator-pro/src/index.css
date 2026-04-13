@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.4);
+  --glass-gradient-1: rgba(255, 255, 255, 0.3);
+  --glass-gradient-2: rgba(255, 255, 255, 0.05);
+  --glass-gradient-3: rgba(255, 255, 255, 0.1);
+}
+
+.dark {
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --glass-gradient-1: rgba(255, 255, 255, 0.1);
+  --glass-gradient-2: rgba(255, 255, 255, 0.02);
+  --glass-gradient-3: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+.animate-float {
+  animation: float 10s infinite ease-in-out;
+}
+
+.animate-float-delayed {
+  animation: float 12s infinite ease-in-out reverse;
+}
+
+.animate-float-slow {
+  animation: float 15s infinite ease-in-out;
+  animation-delay: -5s;
+}
+
+/* Liquid Glass Implementation */
+.liquid-glass {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%) url(#liquid-glass-filter);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) url(#liquid-glass-filter);
+  border: 1px solid var(--glass-border);
+  box-shadow: 
+    0 30px 60px var(--glass-shadow),
+    inset 0 1px 1px var(--glass-highlight),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.1),
+    inset 0 0 20px var(--glass-gradient-2);
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, var(--glass-gradient-1) 0%, var(--glass-gradient-2) 30%, transparent 50%, rgba(255,255,255,0.01) 70%, var(--glass-border) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-glass::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse at 50% 0%, var(--glass-gradient-1) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translateY(-20%);
+}
+
+.liquid-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+.liquid-glass-sm {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 
+    0 8px 24px var(--glass-shadow),
+    inset 0 1px 1px var(--glass-highlight),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.liquid-glass-sm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, var(--glass-gradient-3) 0%, var(--glass-gradient-2) 40%, transparent 50%, var(--glass-gradient-3) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.liquid-glass-sm > * {
+  position: relative;
+  z-index: 1;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--glass-gradient-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-gradient-1);
+}

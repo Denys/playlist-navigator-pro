@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assistant - Playlist Navigator Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
+
+<body class="min-h-screen bg-[#0a1a12] text-white">
     <div class="max-w-6xl mx-auto px-4 py-8">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-3xl font-bold">Assistant</h1>
-                <p class="text-white/60 mt-1">Dedicated LLM chat with persistent history + memory over playlists and videos.</p>
+                <p class="text-white/60 mt-1">Dedicated LLM chat with persistent history + memory over playlists and
+                    videos.</p>
             </div>
-            <a href="/" class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Back to App</a>
+            <a href="/" class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Back
+                to App</a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <section class="lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div class="mb-3 text-sm text-white/70">Conversation</div>
-                <div id="assistantHistory" class="h-[52vh] overflow-auto rounded-xl border border-white/10 bg-black/20 p-3"></div>
+                <div id="assistantHistory"
+                    class="h-[52vh] overflow-auto rounded-xl border border-white/10 bg-black/20 p-3"></div>
 
                 <div class="mt-3">
-                    <textarea id="assistantInput" class="w-full min-h-[96px] rounded-xl border border-white/15 bg-black/25 p-3" placeholder="Ask anything about your playlists/videos..."></textarea>
+                    <textarea id="assistantInput"
+                        class="w-full min-h-[96px] rounded-xl border border-white/15 bg-black/25 p-3"
+                        placeholder="Ask anything about your playlists/videos..."></textarea>
                     <div class="mt-2 flex items-center gap-2">
-                        <button id="assistantSend" class="px-4 py-2 rounded-lg border border-white/20 bg-violet-600/70 hover:bg-violet-600 text-sm">Send</button>
-                        <button id="assistantReload" class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Reload</button>
-                        <button id="assistantClearHistory" class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Clear History</button>
-                        <button id="assistantClearAll" class="px-4 py-2 rounded-lg border border-red-300/30 bg-red-900/20 hover:bg-red-900/30 text-sm">Clear All Memory</button>
+                        <button id="assistantSend"
+                            class="px-4 py-2 rounded-lg border border-white/20 bg-emerald-600/70 hover:bg-emerald-600 text-sm font-medium">Send</button>
+                        <button id="assistantNewChat"
+                            class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm flex items-center gap-1"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg> New Chat</button>
+                        <button id="assistantReload"
+                            class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Reload</button>
+                        <button id="assistantClearHistory"
+                            class="px-4 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/15 text-sm">Clear
+                            History</button>
+                        <button id="assistantClearAll"
+                            class="px-4 py-2 rounded-lg border border-red-300/30 bg-red-900/20 hover:bg-red-900/30 text-sm">Clear
+                            All Memory</button>
                         <span id="assistantStatus" class="text-xs text-white/70 ml-auto">Ready</span>
                     </div>
                 </div>
@@ -38,12 +57,15 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-xs text-white/70 mb-1">API Key (optional)</label>
-                        <input id="assistantApiKey" type="password" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" placeholder="sk-...">
+                        <input id="assistantApiKey" type="password"
+                            class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm"
+                            placeholder="sk-...">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs text-white/70 mb-1">Provider</label>
-                            <select id="assistantProvider" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm">
+                            <select id="assistantProvider"
+                                class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm">
                                 <option value="gemini" selected>gemini</option>
                                 <option value="openai">openai</option>
                                 <option value="openrouter">openrouter</option>
@@ -52,24 +74,32 @@
                         </div>
                         <div>
                             <label class="block text-xs text-white/70 mb-1">Model</label>
-                            <input id="assistantModel" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" value="gemini-3-flash-preview">
+                            <input id="assistantModel"
+                                class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm"
+                                value="gemini-3-flash-preview">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs text-white/70 mb-1">Session ID</label>
-                        <input id="assistantSession" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" value="default">
+                        <input id="assistantSession"
+                            class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" value="default">
                     </div>
                     <div>
                         <label class="block text-xs text-white/70 mb-1">Scope Query (optional)</label>
-                        <input id="assistantScopeQuery" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" placeholder="python beginner">
+                        <input id="assistantScopeQuery"
+                            class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm"
+                            placeholder="python beginner">
                     </div>
                     <div>
                         <label class="block text-xs text-white/70 mb-1">Scope Playlist ID (optional)</label>
-                        <input id="assistantScopePlaylist" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" placeholder="playlist_id">
+                        <input id="assistantScopePlaylist"
+                            class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm"
+                            placeholder="playlist_id">
                     </div>
                     <div>
                         <label class="block text-xs text-white/70 mb-1">Context Limit</label>
-                        <input id="assistantScopeLimit" class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" value="120">
+                        <input id="assistantScopeLimit"
+                            class="w-full rounded-lg border border-white/15 bg-black/25 p-2 text-sm" value="120">
                     </div>
                 </div>
 
@@ -82,4 +112,5 @@
     <script src="{{ url_for('static', filename='js/assistant-page.js') }}"></script>
     <script src="{{ url_for('static', filename='js/assistant-widget.js') }}"></script>
 </body>
+
 </html>

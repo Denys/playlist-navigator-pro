@@ -1,6 +1,6 @@
 // Playlist Navigator Pro — Service Worker
 // Cache version: bump this to invalidate all caches
-const CACHE_VERSION = 'pnav-v1';
+const CACHE_VERSION = 'pnav-v3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const API_CACHE = `${CACHE_VERSION}-api`;
 

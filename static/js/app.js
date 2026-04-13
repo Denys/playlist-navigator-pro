@@ -39,7 +39,7 @@ const PROGRESS_FILTERS = [
     { id: "completed", label: "Completed", fn: (v) => getProgressStatus(v.video_id) === "completed" }
 ];
 
-let selectedColor = "purple";
+let selectedColor = "green";
 let allVideos = [];
 let allPlaylists = [];
 let allFolders = [];
@@ -143,8 +143,8 @@ function injectStyles() {
         #videoGallery.view-list { grid-template-columns: 1fr !important; }
         .filter-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
         .filter-bar button { border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:6px 12px; font-size:12px; background:rgba(255,255,255,.06); }
-        .filter-bar button.active { background:rgba(168,85,247,.26); border-color:rgba(168,85,247,.72); }
-        .search-result-item.selected { outline:2px solid rgba(168,85,247,.85); }
+        .filter-bar button.active { background:rgba(5,150,105,.26); border-color:rgba(5,150,105,.72); }
+        .search-result-item.selected { outline:2px solid rgba(5,150,105,.85); }
         .notes-panel.hidden { display:none; }
     `;
     document.head.appendChild(style);
@@ -392,7 +392,7 @@ function renderPlaylists() {
             teal: "from-teal-500 to-emerald-700",
             blue: "from-blue-500 to-sky-700",
             green: "from-green-500 to-lime-700"
-        }[playlist.color_scheme] || "from-purple-600 to-indigo-800";
+        }[playlist.color_scheme] || "from-emerald-600 to-sky-800";
 
         html += `
             <div class="video-card glass-card overflow-hidden group">
