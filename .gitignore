@@ -42,6 +42,7 @@ ANTIGRAVITY_SYSTEM_PROMPT_UPE_v2.md
 CHECKPOINT.md
 PLAYLIST_INDEXER_BUGS.md
 playlist_indexer_BUGS/
+REALTIME_COMPLETION_STATE.md
 
 # Archive folder
 .archive/
@@ -55,6 +56,10 @@ testsunit/
 
 # Output data (user-generated)
 output/
+test-temproot/
+
+# Generated bundles
+playlist-navigator-pro*.zip
 
 # Orphaned/temp data files
 2511_3_playlist_data.json
