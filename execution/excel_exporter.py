@@ -5,7 +5,7 @@ Exports playlist video data to Excel format with Name, Link, Description columns
 
 Usage:
     # Export single playlist
-    python excel_exporter.py --playlist daisy_synths_to_check --output export.xlsx
+    python excel_exporter.py --playlist example_playlist --output export.xlsx
     
     # Export all playlists
     python excel_exporter.py --all --output all_playlists.xlsx
