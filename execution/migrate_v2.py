@@ -1,9 +1,9 @@
 
 import json
 import os
-from datetime import datetime
 from typing import List, Dict, Any
 from .metadata_enricher import MetadataEnricher
+from .io_utils import utc_now_iso
 
 def migrate_playlist_to_v2(playlist_data: List[Dict[str, Any]], enricher: MetadataEnricher = None) -> List[Dict[str, Any]]:
     """
@@ -26,8 +26,8 @@ def migrate_playlist_to_v2(playlist_data: List[Dict[str, Any]], enricher: Metada
             
         # 2. Add timestamps if missing
         if 'indexed_at' not in v2_video:
-            v2_video['indexed_at'] = datetime.utcnow().isoformat()
-        v2_video['last_synced_at'] = datetime.utcnow().isoformat()
+            v2_video['indexed_at'] = utc_now_iso()
+        v2_video['last_synced_at'] = utc_now_iso()
         
         # 3. Process duration
         duration_str = v2_video.get('duration', 'PT0S')
@@ -58,7 +58,7 @@ def migrate_playlist_to_v2(playlist_data: List[Dict[str, Any]], enricher: Metada
         if 'sync_status' not in v2_video:
             v2_video['sync_status'] = {
                 'exists_at_source': True,
-                'last_verified': datetime.utcnow().isoformat()
+                'last_verified': utc_now_iso()
             }
             
         migrated_videos.append(v2_video)

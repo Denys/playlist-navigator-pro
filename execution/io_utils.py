@@ -9,6 +9,15 @@ from typing import Any
 _ENV_LOADED_DIRS = set()
 
 
+def utc_now() -> datetime.datetime:
+    return datetime.datetime.now(datetime.UTC)
+
+
+def utc_now_iso(z_suffix: bool = False) -> str:
+    value = utc_now().isoformat()
+    return value.replace("+00:00", "Z") if z_suffix else value
+
+
 def read_json_file(path: str, default: Any):
     """Read JSON file with a safe fallback."""
     if not os.path.exists(path):

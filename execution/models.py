@@ -1,8 +1,9 @@
-
-from pydantic import BaseModel, Field, HttpUrl, validator
-from typing import List, Optional, Dict, Union
+from pydantic import BaseModel, ConfigDict, Field
+from typing import List, Optional
 from datetime import datetime
 from enum import Enum
+
+from .io_utils import utc_now
 
 class ThematicCategory(str, Enum):
     DIY_ELECTRONICS = "diy_electronics"
@@ -56,12 +57,12 @@ class TagData(BaseModel):
 
 class SyncStatus(BaseModel):
     exists_at_source: bool = True
-    last_verified: datetime = Field(default_factory=datetime.utcnow)
+    last_verified: datetime = Field(default_factory=utc_now)
 
 class PlaylistMembership(BaseModel):
     playlist_id: str
     playlist_name: str
-    added_at: datetime = Field(default_factory=datetime.utcnow)
+    added_at: datetime = Field(default_factory=utc_now)
 
 class VideoMetadata(BaseModel):
     thematic: ThematicMetadata
@@ -72,14 +73,16 @@ class VideoMetadata(BaseModel):
     difficulty_level: str = "intermediate"
 
 class VideoData(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="ignore")
+
     video_id: str
     title: str
     url: str
     channel: str
     channel_id: Optional[str] = None
     published_at: Optional[str] = None # ISO string
-    indexed_at: datetime = Field(default_factory=datetime.utcnow)
-    last_synced_at: datetime = Field(default_factory=datetime.utcnow)
+    indexed_at: datetime = Field(default_factory=utc_now)
+    last_synced_at: datetime = Field(default_factory=utc_now)
     thumbnail: Optional[str] = None
     description: str = ""
     duration: Optional[str] = None # ISO format PT15M
@@ -92,7 +95,3 @@ class VideoData(BaseModel):
     
     playlist_memberships: List[PlaylistMembership] = Field(default_factory=list)
     sync_status: SyncStatus
-    
-    class Config:
-        arbitrary_types_allowed = True
-        extra = "ignore" 

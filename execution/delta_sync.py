@@ -1,7 +1,7 @@
 
 from typing import List, Dict, Any, Tuple, Set
-from datetime import datetime
 from .metadata_enricher import MetadataEnricher
+from .io_utils import utc_now_iso
 
 class DeltaSync:
     """
@@ -44,7 +44,7 @@ class DeltaSync:
         current_map = {v['video_id']: v for v in current_videos}
         
         final_videos = []
-        now_ts = datetime.utcnow().isoformat()
+        now_ts = utc_now_iso()
         
         # 1. Process Unchanged
         for vid_id in delta['unchanged']:

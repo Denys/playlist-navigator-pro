@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Unified Playlist Manager Web Application
 Combines YouTube Playlist Indexer and Master Search in one tabbed interface.
@@ -6,7 +6,7 @@ Combines YouTube Playlist Indexer and Master Search in one tabbed interface.
 
 from flask import Flask, render_template, request, jsonify, Response
 from threading import Thread, Event, Lock
-import datetime # Added to fix datetime.datetime.utcnow()
+import datetime
 import uuid
 import time
 import sys
@@ -24,7 +24,7 @@ from execution.tag_manager import TagManager
 from execution.video_store_api import VideoStoreAPI
 from execution.utils import extract_playlist_id_from_url
 from execution.models import VideoData
-from execution.io_utils import clean_secret_value, get_env_secret, read_json_file, write_json_atomic
+from execution.io_utils import clean_secret_value, get_env_secret, read_json_file, write_json_atomic, utc_now_iso
 from execution.db import SQLiteStore
 
 
@@ -207,7 +207,7 @@ def bootstrap_sqlite_from_json_if_needed(store: SQLiteStore, db_path: str):
             p_copy = dict(p)
             p_copy["video_count"] = len(videos)
             if not p_copy.get("last_updated"):
-                p_copy["last_updated"] = datetime.datetime.utcnow().isoformat() + "Z"
+                p_copy["last_updated"] = utc_now_iso(z_suffix=True)
             store.upsert_playlist(p_copy)
             store.save_playlist_videos(p_copy.get("id", ""), p_copy.get("name", ""), videos)
     except Exception:
@@ -313,7 +313,7 @@ def append_assistant_history(session_id: str, role: str, content: str):
     history.append({
         "role": role,
         "content": content,
-        "ts": datetime.datetime.utcnow().isoformat() + "Z",
+        "ts": utc_now_iso(z_suffix=True),
     })
     # Keep bounded history size per session.
     convs[session_id] = history[-120:]
@@ -325,7 +325,7 @@ def append_assistant_history(session_id: str, role: str, content: str):
             if item not in existing:
                 existing.append(item)
         store["memory"]["items"] = existing[-200:]
-        store["memory"]["updated_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+        store["memory"]["updated_at"] = utc_now_iso(z_suffix=True)
     save_assistant_memory_store(store)
 
 
@@ -416,7 +416,7 @@ class AutoSyncScheduler:
         while not self._stop_event.is_set():
             if self.enabled:
                 result = run_auto_sync_once(dry_run=False)
-                self.last_run_at = datetime.datetime.utcnow().isoformat() + "Z"
+                self.last_run_at = utc_now_iso(z_suffix=True)
                 self.last_result = result
             wait_seconds = self.interval_minutes * 60
             if self._stop_event.wait(wait_seconds):
@@ -606,7 +606,7 @@ def delta_sync_playlist(playlist_id):
         # Update registry
         playlist_info['video_count'] = len([v for v in result_videos 
                                             if v.get('sync_status', {}).get('exists_at_source', True)])
-        playlist_info['last_updated'] = datetime.datetime.utcnow().isoformat()
+        playlist_info['last_updated'] = utc_now_iso()
         
         if get_data_backend() == "sqlite":
             get_sqlite_store().upsert_playlist(playlist_info)
@@ -1214,7 +1214,7 @@ def set_playlist_folder(playlist_id):
     target["folder"] = folder
     registry["total_playlists"] = len(registry.get("playlists", []))
     registry["total_videos"] = sum(int(p.get("video_count", 0) or 0) for p in registry.get("playlists", []))
-    registry["last_updated"] = datetime.datetime.utcnow().isoformat() + "Z"
+    registry["last_updated"] = utc_now_iso(z_suffix=True)
     write_registry_json(registry)
     return jsonify({"status": "success", "playlist_id": playlist_id, "folder": folder})
 
@@ -1661,7 +1661,7 @@ def assistant_history_clear():
     else:
         store.get("conversations", {}).pop(session_id, None)
     if clear_memory:
-        store["memory"] = {"items": [], "updated_at": datetime.datetime.utcnow().isoformat() + "Z"}
+        store["memory"] = {"items": [], "updated_at": utc_now_iso(z_suffix=True)}
     save_assistant_memory_store(store)
     return jsonify({"status": "success", "session_id": session_id, "clear_memory": clear_memory})
 
@@ -1733,7 +1733,7 @@ def run_auto_sync_once(dry_run: bool = False) -> Dict[str, Any]:
             result_videos, _ = delta_sync.apply_delta_with_stats(existing_videos, current_videos, keep_removed=True)
             save_playlist_videos(p, result_videos)
             p["video_count"] = len([v for v in result_videos if v.get("sync_status", {}).get("exists_at_source", True)])
-            p["last_updated"] = datetime.datetime.utcnow().isoformat() + "Z"
+            p["last_updated"] = utc_now_iso(z_suffix=True)
             if get_data_backend() == "sqlite":
                 get_sqlite_store().upsert_playlist(p)
             synced += 1
@@ -1751,7 +1751,7 @@ def run_auto_sync_once(dry_run: bool = False) -> Dict[str, Any]:
         "playlists_skipped": skipped,
         "errors": errors,
     }
-    sync_scheduler.last_run_at = datetime.datetime.utcnow().isoformat() + "Z"
+    sync_scheduler.last_run_at = utc_now_iso(z_suffix=True)
     sync_scheduler.last_result = result
     return result
 
@@ -1990,8 +1990,8 @@ def register_playlist(name, output_dir, files, playlist_data, color_scheme, yout
     playlist_info = {
         'id': safe_id,
         'name': name,
-        'created_at': datetime.datetime.utcnow().isoformat() + 'Z',
-        'last_updated': datetime.datetime.utcnow().isoformat() + 'Z',
+        'created_at': utc_now_iso(z_suffix=True),
+        'last_updated': utc_now_iso(z_suffix=True),
         'video_count': len(playlist_data),
         'output_dir': output_dir,
         'html_file': next((f for f in files if f.endswith('.html')), ''),
@@ -2009,7 +2009,7 @@ def register_playlist(name, output_dir, files, playlist_data, color_scheme, yout
     # Update totals
     registry['total_playlists'] = len(playlists)
     registry['total_videos'] = sum(int(p.get('video_count', 0) or 0) for p in playlists)
-    registry['last_updated'] = datetime.datetime.utcnow().isoformat() + 'Z'
+    registry['last_updated'] = utc_now_iso(z_suffix=True)
     
     # Save registry
     base_dir = get_app_root()
@@ -2103,3 +2103,4 @@ if __name__ == '__main__':
         Thread(target=open_browser).start()
         
     app.run(debug=True, port=5000, threaded=True)
+
