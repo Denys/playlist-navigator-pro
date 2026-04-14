@@ -2,12 +2,46 @@
 import pytest
 import json
 import os
+import shutil
 import sys
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
+from uuid import uuid4
 
 # Add project root to path so we can import execution modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+_TEST_TMP_PARENT = Path(__file__).resolve().parents[1] / ".tmp" / "pytest-fixtures"
+
+
+def _make_tmp_dir(parent: Path, prefix: str) -> Path:
+    parent.mkdir(parents=True, exist_ok=True)
+    candidate = parent / f"{prefix}-{uuid4().hex}"
+    candidate.mkdir()
+    return candidate
+
+
+@pytest.fixture(scope="session")
+def _tmp_path_root():
+    """
+    Avoid pytest's built-in tmp_path factory on Windows/Python 3.14 here.
+
+    In this environment tempfile/pytest temp dirs intermittently become unreadable
+    immediately after creation, while plain Path.mkdir() directories remain usable.
+    """
+    root = _make_tmp_dir(_TEST_TMP_PARENT, "run")
+    yield root
+    shutil.rmtree(root, ignore_errors=True)
+
+
+@pytest.fixture
+def tmp_path(_tmp_path_root):
+    path = _make_tmp_dir(_tmp_path_root, "case")
+    try:
+        yield path
+    finally:
+        shutil.rmtree(path, ignore_errors=True)
 
 @pytest.fixture
 def mock_video_v1():

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Shell Design Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --canvas-1:#0b1020; --canvas-2:#121d36; --canvas-3:#071018;
+      --surface:rgba(14,22,40,.48); --surface-strong:rgba(18,27,48,.58);
+      --text:#edf4ff; --muted:#8ea0bb;
+      --accent:#48a8ff; --accent-2:#2dd4bf; --success:#3bd089; --warning:#ffb454;
+      --glass-edge:rgba(255,255,255,.14); --glass-fill:rgba(255,255,255,.028); --glass-sheen:rgba(255,255,255,.16);
+      --radius:30px; --blur:24px; --glow:.28; --density:1; --motion:running;
+      --gap:calc(24px * var(--density)); --pad:calc(24px * var(--density));
+    }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%}
+    body{
+      font-family:"IBM Plex Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 14% 18%, color-mix(in srgb, var(--accent) 28%, transparent) 0%, transparent 26%),
+        radial-gradient(circle at 84% 16%, color-mix(in srgb, var(--accent-2) 22%, transparent) 0%, transparent 24%),
+        linear-gradient(135deg,var(--canvas-1),var(--canvas-2) 54%,var(--canvas-3));
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.3;
+      background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+      background-size:140px 140px;mask-image:radial-gradient(circle at center, black 45%, transparent 85%);
+    }
+    body::after{
+      content:"";position:fixed;inset:-12%;pointer-events:none;filter:blur(48px);opacity:.75;
+      background:
+        radial-gradient(circle at 18% 22%, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 28%),
+        radial-gradient(circle at 76% 24%, color-mix(in srgb, var(--accent-2) 18%, transparent) 0%, transparent 26%);
+      animation:drift 18s ease-in-out infinite alternate;animation-play-state:var(--motion);
+    }
+    @keyframes drift{from{transform:translate3d(-2%,-1%,0)}to{transform:translate3d(3%,2%,0) scale(1.03)}}
+    @keyframes pulse{0%,100%{transform:scale(1);opacity:.72}50%{transform:scale(1.08);opacity:1}}
+    .shell{display:grid;grid-template-columns:248px minmax(0,1fr) 320px;gap:var(--gap);min-height:100vh;padding:24px;position:relative;z-index:1}
+    .panel{
+      position:relative;overflow:hidden;border-radius:var(--radius);padding:var(--pad);
+      border:1px solid var(--glass-edge);
+      background:
+        linear-gradient(156deg, rgba(255,255,255,.12), rgba(255,255,255,.03) 26%, rgba(255,255,255,.015) 56%, rgba(255,255,255,.045)),
+        var(--surface);
+      backdrop-filter:blur(var(--blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--blur)) saturate(140%);
+      box-shadow:
+        0 24px 60px rgba(4,7,18,.42),
+        0 0 0 1px rgba(255,255,255,.05) inset,
+        0 1px 0 rgba(255,255,255,.16) inset,
+        inset 0 -18px 40px rgba(255,255,255,.018);
+    }
+    .panel::before{
+      content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+      background:
+        linear-gradient(180deg, var(--glass-sheen), rgba(255,255,255,0) 20%, rgba(255,255,255,0) 72%, rgba(255,255,255,.04)),
+        linear-gradient(125deg, rgba(255,255,255,.08), rgba(255,255,255,0) 28%, rgba(255,255,255,0) 64%, rgba(255,255,255,.05));
+      opacity:.9;
+    }
+    .panel::after{
+      content:"";position:absolute;inset:-22% auto auto -18%;width:55%;height:58%;pointer-events:none;
+      background:radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 26%, transparent 66%);
+      filter:blur(20px);opacity:.46;
+    }
+    .eyebrow,.section-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .mark{
+      width:56px;height:56px;border-radius:18px;display:grid;place-items:center;font:800 20px/1 "Syne",sans-serif;color:#071018;
+      background:radial-gradient(circle at 24% 20%, rgba(255,255,255,.35), transparent 45%),linear-gradient(145deg,color-mix(in srgb, var(--accent) 82%, white 4%),color-mix(in srgb, var(--accent-2) 72%, black 10%));
+      box-shadow:0 20px 44px color-mix(in srgb, var(--accent) calc(var(--glow) * 100%), transparent), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    h1,h2,h3,p{margin:0} .brand h1,.hero h2,.lab h2,.metric strong,.hero-stat strong{font-family:"Syne",sans-serif;letter-spacing:-.05em}
+    .brand h1{font-size:21px;margin:4px 0} .brand p,.meta,.muted,.sub{font-size:13px;line-height:1.5;color:var(--muted)}
+    .side{display:flex;flex-direction:column;justify-content:space-between;gap:22px}
+    .stack,.nav,.tool-list,.activity,.controls{display:flex;flex-direction:column;gap:10px}
+    .nav-item,.tool-item,.toggle,.search,.pill,.preset,.button{
+      display:flex;align-items:center;gap:12px;border-radius:18px;border:1px solid transparent;
+      background:var(--glass-fill);color:var(--text)
+    }
+    .nav-item,.tool-item{padding:12px 14px}
+    .nav-item.active{background:linear-gradient(145deg,color-mix(in srgb, var(--accent) 18%, transparent),color-mix(in srgb, var(--accent-2) 14%, transparent)),rgba(255,255,255,.04);border-color:color-mix(in srgb, var(--accent) 38%, rgba(255,255,255,.06));box-shadow:0 16px 34px color-mix(in srgb, var(--accent) 20%, transparent)}
+    .icon{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:0 0 34px;font-size:11px;font-weight:700;letter-spacing:.08em;background:rgba(255,255,255,.038);border:1px solid rgba(255,255,255,.1)}
+    .copy{display:flex;flex-direction:column;gap:2px}
+    .copy strong,.tool-item strong,.control-head strong{font-size:14px}
+    .badge,.mini{margin-left:auto;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.032)}
+    .badge{color:color-mix(in srgb, var(--accent) 75%, white 10%);background:color-mix(in srgb, var(--accent) 14%, transparent)}
+    .status-card,.hero-stat,.control{padding:16px;border-radius:22px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.018)), var(--surface-strong);box-shadow:0 18px 42px rgba(3,5,16,.34), inset 0 1px 0 rgba(255,255,255,.12)}
+    .dot{width:9px;height:9px;border-radius:999px;background:var(--success);box-shadow:0 0 18px color-mix(in srgb, var(--success) 80%, transparent);animation:pulse 2.4s ease-in-out infinite;animation-play-state:var(--motion)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .chip-row,.preset-row,.actions{display:flex;gap:10px;flex-wrap:wrap}
+    .pill,.preset,.button{padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.02em;border:1px solid rgba(255,255,255,.08)}
+    .preset,.button{cursor:pointer}
+    .preset.active{border-color:color-mix(in srgb, var(--accent) 42%, white 12%);background:linear-gradient(140deg,color-mix(in srgb, var(--accent) 18%, transparent),rgba(255,255,255,.03));box-shadow:0 14px 30px color-mix(in srgb, var(--accent) 18%, transparent)}
+    .button.primary{background:linear-gradient(145deg,color-mix(in srgb, var(--accent) 90%, white 5%),color-mix(in srgb, var(--accent-2) 78%, black 6%));color:#071018;border:none;box-shadow:0 16px 34px color-mix(in srgb, var(--accent) 28%, transparent)}
+    .main{display:flex;flex-direction:column;gap:var(--gap);min-width:0}
+    .lab{display:flex;flex-direction:column;gap:16px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .title h1{font-size:clamp(28px,4vw,42px);line-height:.95;margin:8px 0 6px}
+    .title p{max-width:58ch}
+    .search-wrap{min-width:280px;flex:0 0 320px;display:flex;flex-direction:column;gap:12px}
+    .search{padding:14px 16px;border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.022)} .search input{width:100%;background:transparent;border:none;outline:none;color:var(--text);font:inherit}
+    .hero-grid,.content-grid,.bottom-grid{display:grid;gap:var(--gap)} .hero-grid{grid-template-columns:1.25fr .9fr .9fr} .content-grid{grid-template-columns:1.35fr 1fr} .bottom-grid{grid-template-columns:1fr .9fr}
+    .hero{display:flex;flex-direction:column;gap:18px;min-height:240px} .hero-top{display:flex;justify-content:space-between;gap:16px}
+    .hero h2{font-size:clamp(22px,2.6vw,34px);line-height:1}
+    .hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .hero-stat strong,.metric strong{display:block;margin-top:6px;font-size:clamp(22px,2vw,28px);line-height:1}
+    .metric{min-height:240px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+    .metric strong{font-size:clamp(34px,4vw,48px);line-height:.9}
+    .track,.bar{height:12px;border-radius:999px;background:rgba(255,255,255,.045);overflow:hidden}
+    .fill,.bar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 0 30px color-mix(in srgb, var(--accent) 30%, transparent)}
+    .spark{margin-top:auto;height:72px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,color-mix(in srgb, var(--accent) 10%, transparent),transparent)}
+    .spark svg{width:100%;height:100%;display:block}
+    table{width:100%;border-collapse:collapse;margin-top:12px} th,td{text-align:left;padding:14px 8px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
+    th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+    .status{display:inline-flex;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045)}
+    .status.active{color:color-mix(in srgb, var(--accent) 84%, white 12%);background:color-mix(in srgb, var(--accent) 16%, transparent)}
+    .status.good{color:color-mix(in srgb, var(--success) 80%, white 14%);background:color-mix(in srgb, var(--success) 14%, transparent)}
+    .status.idle{color:color-mix(in srgb, var(--warning) 86%, white 10%);background:color-mix(in srgb, var(--warning) 14%, transparent)}
+    .activity-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+    .activity-item:last-child{border-bottom:none;padding-bottom:0}
+    .activity-dot{width:10px;height:10px;margin-top:6px;border-radius:999px;background:var(--accent);box-shadow:0 0 22px color-mix(in srgb, var(--accent) 45%, transparent)}
+    .timeline{display:grid;gap:12px;margin-top:12px} .trow{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center}
+    .lab h2{font-size:24px;line-height:1;margin:6px 0}
+    .control{display:grid;gap:12px} .control-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+    input[type="range"]{width:100%;accent-color:var(--accent);cursor:pointer}
+    .toggle{justify-content:space-between;padding:14px 16px;border-color:rgba(255,255,255,.07)} .toggle input{width:18px;height:18px;accent-color:var(--accent)}
+    .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:10px} .swatch{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center}
+    .swatch span{display:block;height:34px;border-radius:14px;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);margin-top:8px}
+    @media (max-width:1380px){.shell{grid-template-columns:220px minmax(0,1fr)}.lab{grid-column:1/-1}}
+    @media (max-width:1080px){.shell,.hero-grid,.content-grid,.bottom-grid{grid-template-columns:1fr}.header{flex-direction:column;align-items:stretch}.search-wrap{min-width:0;flex:1 1 auto}}
+    @media (max-width:720px){.shell{padding:16px}.hero-stats{grid-template-columns:1fr}.activity-item,.trow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="panel side">
+      <div class="stack">
+        <div class="brand">
+          <div class="mark">PN</div>
+          <div>
+            <div class="eyebrow">Design Lab</div>
+            <h1>Playlist Navigator Pro</h1>
+            <p>Full-shell evaluator for hierarchy, color, density, and motion.</p>
+          </div>
+        </div>
+        <section>
+          <div class="section-title">Primary Rail</div>
+          <div class="nav">
+            <div class="nav-item active"><div class="icon">IX</div><div class="copy"><strong>Indexer</strong><span class="sub">Capture and tag new playlists</span></div><div class="badge">Live</div></div>
+            <div class="nav-item"><div class="icon">PL</div><div class="copy"><strong>Playlists</strong><span class="sub">Collections and sorting</span></div></div>
+            <div class="nav-item"><div class="icon">SR</div><div class="copy"><strong>Search</strong><span class="sub">Cross-library retrieval</span></div></div>
+            <div class="nav-item"><div class="icon">GA</div><div class="copy"><strong>Gallery</strong><span class="sub">Visual browsing</span></div></div>
+            <div class="nav-item"><div class="icon">ST</div><div class="copy"><strong>Store</strong><span class="sub">Indexed assets and exports</span></div></div>
+            <div class="nav-item"><div class="icon">MM</div><div class="copy"><strong>Mind Map</strong><span class="sub">Topic topology</span></div></div>
+            <div class="nav-item"><div class="icon">AI</div><div class="copy"><strong>Assistant</strong><span class="sub">Semantic guidance</span></div></div>
+          </div>
+        </section>
+      </div>
+      <div class="stack">
+        <section class="status-card">
+          <div class="row"><div><div class="eyebrow">System</div><strong>Realtime Health</strong></div><div class="dot"></div></div>
+          <div class="chip-row" style="margin-top:10px">
+            <div class="pill">Quota 42%</div><div class="pill">2 sync workers</div><div class="pill">Queue stable</div>
+          </div>
+        </section>
+        <section>
+          <div class="section-title">Utilities</div>
+          <div class="tool-list">
+            <div class="tool-item"><div class="icon">EX</div><div class="copy"><strong>Export Packs</strong><span class="sub">HTML, PDF, markdown</span></div></div>
+            <div class="tool-item"><div class="icon">DT</div><div class="copy"><strong>Delta Sync</strong><span class="sub">Refresh changed playlists only</span></div></div>
+            <div class="tool-item"><div class="icon">TG</div><div class="copy"><strong>Tag Console</strong><span class="sub">Label refinement and cleanup</span></div></div>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="panel header">
+        <div class="title">
+          <div class="eyebrow">Current View / Indexer Shell</div>
+          <h1>Cleaner contrast, calmer palette, and one clear hero action.</h1>
+          <p class="muted">The shell keeps the glassy ambient feel, but moves brand energy to blue-cyan accents. Green is semantic instead of atmospheric.</p>
+        </div>
+        <div class="search-wrap">
+          <div class="search"><div class="mini">Query</div><input aria-label="Prototype global search" value="Find playlists, tags, clusters, or recent sync events"></div>
+          <div class="actions"><button class="button">Compare to current</button><button class="button">Queue health</button><button class="button primary">Run sync now</button></div>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="panel hero">
+          <div class="hero-top">
+            <div>
+              <div class="eyebrow">Primary Narrative</div>
+              <h2>Indexing is the hero. Everything else should read as support.</h2>
+              <p class="muted">The current shell gives every card equal weight. This direction raises one dominant entry point, then quiets the rest.</p>
+            </div>
+            <div class="mini">Mineral Glass</div>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><div class="meta">Playlists ready</div><strong>148</strong></div>
+            <div class="hero-stat"><div class="meta">Videos indexed</div><strong>6.4k</strong></div>
+            <div class="hero-stat"><div class="meta">Pending sync</div><strong>12</strong></div>
+          </div>
+          <div class="spark">
+            <svg viewBox="0 0 800 180" preserveAspectRatio="none" aria-hidden="true">
+              <defs><linearGradient id="line-gradient" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="var(--accent)"></stop><stop offset="100%" stop-color="var(--accent-2)"></stop></linearGradient></defs>
+              <path d="M0,140 C70,110 120,130 180,100 C240,70 280,20 360,34 C430,46 470,134 560,126 C650,118 700,44 800,62" fill="none" stroke="url(#line-gradient)" stroke-width="7" stroke-linecap="round"></path>
+              <path d="M0,180 L0,140 C70,110 120,130 180,100 C240,70 280,20 360,34 C430,46 470,134 560,126 C650,118 700,44 800,62 L800,180 Z" fill="url(#line-gradient)" opacity=".16"></path>
+            </svg>
+          </div>
+        </article>
+        <article class="panel metric">
+          <div><div class="eyebrow">Quota pacing</div><strong>42%</strong><p class="muted">Healthy headroom after the last metadata sweep.</p></div>
+          <div><div class="row"><span class="status good">Stable</span><span class="meta">4,230 / 10,000 units</span></div><div class="track" style="margin-top:14px"><div class="fill" style="width:42%"></div></div></div>
+        </article>
+        <article class="panel metric">
+          <div><div class="eyebrow">Batch window</div><strong>12m</strong><p class="muted">Shorter perceived cycles make the shell feel operational, not decorative.</p></div>
+          <div><div class="row"><span class="status active">2 workers live</span><span class="meta">Target &lt; 15m</span></div><div class="track" style="margin-top:14px"><div class="fill" style="width:78%"></div></div></div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel">
+          <div class="section-title">Queue Snapshot</div>
+          <table>
+            <thead><tr><th>Playlist</th><th>Focus</th><th>State</th><th>Lag</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Firmware Research Loop</strong><div class="sub">High-signal engineering feed</div></td><td><span class="mini">Delta sync</span></td><td><span class="status active">Running</span></td><td class="meta">2m</td></tr>
+              <tr><td><strong>Audio Hardware Deep Cuts</strong><div class="sub">Long-form interviews and teardowns</div></td><td><span class="mini">Metadata enrich</span></td><td><span class="status idle">Queued</span></td><td class="meta">9m</td></tr>
+              <tr><td><strong>LLM Systems Archive</strong><div class="sub">Dense technical playlist with taxonomy drift</div></td><td><span class="mini">Tag cleanup</span></td><td><span class="status good">Ready</span></td><td class="meta">0m</td></tr>
+              <tr><td><strong>Modular Composition Notes</strong><div class="sub">Creative content with visual grouping</div></td><td><span class="mini">Preview export</span></td><td><span class="status idle">Hold</span></td><td class="meta">15m</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class="panel">
+          <div class="section-title">Hierarchy Test</div>
+          <div class="activity">
+            <div class="activity-item"><div class="activity-dot"></div><div><strong>Primary CTA block</strong><div class="sub">This panel should stay quieter than the hero, but clearer than the old equal-weight cards.</div></div><span class="meta">01</span></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--accent-2);box-shadow:0 0 22px color-mix(in srgb, var(--accent-2) 45%, transparent)"></div><div><strong>Mid-tone panel shell</strong><div class="sub">Surface values separate structure without making every panel glow at the same intensity.</div></div><span class="meta">02</span></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--warning);box-shadow:0 0 22px color-mix(in srgb, var(--warning) 45%, transparent)"></div><div><strong>Semantic color discipline</strong><div class="sub">Yellow and green are signals. Blue and cyan carry the brand energy.</div></div><span class="meta">03</span></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel">
+          <div class="section-title">Recent Activity</div>
+          <div class="activity">
+            <div class="activity-item"><div class="activity-dot"></div><div><strong>Metadata sweep completed for “Embedded Audio Notes”</strong><div class="sub">34 transcripts normalized, 16 tags merged, 2 descriptions flagged.</div></div><span class="meta">Now</span></div>
+            <div class="activity-item"><div class="activity-dot"></div><div><strong>Preview pack rendered for “Hardware Audio Projects”</strong><div class="sub">HTML, markdown, and PDF bundles generated with fresh timestamps.</div></div><span class="meta">12m</span></div>
+            <div class="activity-item"><div class="activity-dot"></div><div><strong>Delta sync prevented 278 redundant requests</strong><div class="sub">A calm operational win, not a full-screen theme choice.</div></div><span class="meta">28m</span></div>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="section-title">Flow Timing</div>
+          <div class="timeline">
+            <div class="trow"><span class="meta">Paste URL</span><div class="bar"><span style="width:24%"></span></div><strong>10s</strong></div>
+            <div class="trow"><span class="meta">Metadata fetch</span><div class="bar"><span style="width:68%"></span></div><strong>44s</strong></div>
+            <div class="trow"><span class="meta">Tag review</span><div class="bar"><span style="width:38%"></span></div><strong>18s</strong></div>
+            <div class="trow"><span class="meta">Export ready</span><div class="bar"><span style="width:52%"></span></div><strong>26s</strong></div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <aside class="panel lab">
+      <div><div class="eyebrow">Live Controls</div><h2>Design Lab</h2><p class="muted">Pressure-test palette, intensity, surface softness, and motion before porting any direction into the app.</p></div>
+      <section><div class="section-title">Presets</div><div class="preset-row"><button class="preset active" data-preset="mineral">Mineral Glass</button><button class="preset" data-preset="green">Current Green</button><button class="preset" data-preset="graphite">Graphite Ice</button></div></section>
+      <section class="controls">
+        <div class="control"><div class="control-head"><strong>Hue shift</strong><span class="meta" id="hue-value">8 deg</span></div><input id="hue-shift" type="range" min="-40" max="40" value="8"></div>
+        <div class="control"><div class="control-head"><strong>Accent intensity</strong><span class="meta" id="accent-value">135%</span></div><input id="accent-boost" type="range" min="70" max="145" value="135"></div>
+        <div class="control"><div class="control-head"><strong>Glass blur</strong><span class="meta" id="blur-value">10 px</span></div><input id="blur-level" type="range" min="10" max="34" value="10"></div>
+        <div class="control"><div class="control-head"><strong>Glow strength</strong><span class="meta" id="glow-value">45%</span></div><input id="glow-level" type="range" min="10" max="55" value="45"></div>
+        <div class="control"><div class="control-head"><strong>Corner radius</strong><span class="meta" id="radius-value">36 px</span></div><input id="radius-level" type="range" min="14" max="38" value="36"></div>
+        <div class="control"><div class="control-head"><strong>Density</strong><span class="meta" id="density-value">88%</span></div><input id="density-level" type="range" min="88" max="112" value="88"></div>
+        <label class="toggle"><div><strong>Ambient motion</strong><div class="sub">Enable drifting background and pulse indicators.</div></div><input id="motion-toggle" type="checkbox" checked></label>
+        <label class="toggle"><div><strong>Quiet mode</strong><div class="sub">Reduce atmosphere for flatter enterprise reading.</div></div><input id="quiet-toggle" type="checkbox"></label>
+      </section>
+      <section class="control">
+        <div class="section-title">Token Swatches</div>
+        <div class="swatches">
+          <div class="swatch">Canvas<span id="sw-canvas" style="background:var(--canvas-2)"></span></div>
+          <div class="swatch">Surface<span id="sw-surface" style="background:var(--surface-strong)"></span></div>
+          <div class="swatch">Accent<span id="sw-accent" style="background:var(--accent)"></span></div>
+          <div class="swatch">Second<span id="sw-accent-2" style="background:var(--accent-2)"></span></div>
+          <div class="swatch">Success<span id="sw-success" style="background:var(--success)"></span></div>
+        </div>
+      </section>
+      <p class="muted">Recommended evaluation path: compare <strong>Current Green</strong> against <strong>Mineral Glass</strong>, then use hue and density sliders to find the point where the shell stays cinematic without getting noisy.</p>
+    </aside>
+  </div>
+  <script>
+    const presets = {
+      mineral:{canvas1:"#0b1020",canvas2:"#121d36",canvas3:"#071018",surface:"rgba(14,22,40,.46)",surfaceStrong:"rgba(18,27,48,.56)",text:"#edf4ff",muted:"#8ea0bb",accent:"#48a8ff",accent2:"#2dd4bf",success:"#3bd089",warning:"#ffb454"},
+      green:{canvas1:"#09150f",canvas2:"#0c2418",canvas3:"#06100c",surface:"rgba(12,27,19,.48)",surfaceStrong:"rgba(14,34,24,.58)",text:"#ecfff5",muted:"#9ec8b2",accent:"#1fb981",accent2:"#67b4ff",success:"#64e59a",warning:"#ffc266"},
+      graphite:{canvas1:"#101523",canvas2:"#1a2337",canvas3:"#0b111b",surface:"rgba(18,24,39,.48)",surfaceStrong:"rgba(25,33,52,.58)",text:"#f3f7ff",muted:"#9eabc2",accent:"#82cbff",accent2:"#a6a9ff",success:"#43d799",warning:"#ffbf67"}
+    };
+    const root = document.documentElement;
+    const ids = {
+      hue:document.getElementById("hue-shift"), accent:document.getElementById("accent-boost"), blur:document.getElementById("blur-level"),
+      glow:document.getElementById("glow-level"), radius:document.getElementById("radius-level"), density:document.getElementById("density-level"),
+      motion:document.getElementById("motion-toggle"), quiet:document.getElementById("quiet-toggle"),
+      hueValue:document.getElementById("hue-value"), accentValue:document.getElementById("accent-value"), blurValue:document.getElementById("blur-value"),
+      glowValue:document.getElementById("glow-value"), radiusValue:document.getElementById("radius-value"), densityValue:document.getElementById("density-value"),
+      swCanvas:document.getElementById("sw-canvas"), swSurface:document.getElementById("sw-surface"), swAccent:document.getElementById("sw-accent"),
+      swAccent2:document.getElementById("sw-accent-2"), swSuccess:document.getElementById("sw-success")
+    };
+    let current = "mineral";
+    const clamp = (v,min,max) => Math.min(max, Math.max(min, v));
+    function hexToHsl(hex){
+      const n = hex.replace("#",""), x = parseInt(n,16), r = ((x>>16)&255)/255, g = ((x>>8)&255)/255, b = (x&255)/255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b); let h = 0, s = 0; const l = (max + min) / 2;
+      if (max !== min) { const d = max - min; s = l > .5 ? d / (2 - max - min) : d / (max + min); h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; }
+      return { h:h*360, s:s*100, l:l*100 };
+    }
+    function tint(hex, shift, sat = 1, light = 0){
+      const c = hexToHsl(hex);
+      return `hsl(${(c.h + shift + 360) % 360}deg ${clamp(c.s * sat, 18, 100)}% ${clamp(c.l + light, 8, 92)}%)`;
+    }
+    function apply(){
+      const p = presets[current], shift = Number(ids.hue.value), sat = Number(ids.accent.value)/100, blur = Number(ids.blur.value),
+        glow = Number(ids.glow.value)/100, radius = Number(ids.radius.value), density = Number(ids.density.value)/100, quiet = ids.quiet.checked;
+      const accent = tint(p.accent, shift, sat, quiet ? -4 : 0), accent2 = tint(p.accent2, shift * .5, sat, quiet ? -2 : 0), success = tint(p.success, shift * .2, 1, 0);
+      root.style.setProperty("--canvas-1", p.canvas1); root.style.setProperty("--canvas-2", p.canvas2); root.style.setProperty("--canvas-3", p.canvas3);
+      root.style.setProperty("--surface", quiet ? "rgba(13,18,30,.76)" : p.surface); root.style.setProperty("--surface-strong", quiet ? "rgba(17,23,36,.82)" : p.surfaceStrong);
+      root.style.setProperty("--text", p.text); root.style.setProperty("--muted", p.muted); root.style.setProperty("--accent", accent); root.style.setProperty("--accent-2", accent2);
+      root.style.setProperty("--success", success); root.style.setProperty("--warning", tint(p.warning, shift * .1, 1, 0));
+      root.style.setProperty("--radius", `${radius}px`); root.style.setProperty("--blur", `${quiet ? Math.max(8, blur - 10) : blur}px`);
+      root.style.setProperty("--glow", `${quiet ? Math.max(.12, glow * .45) : glow}`); root.style.setProperty("--density", density); root.style.setProperty("--motion", ids.motion.checked && !quiet ? "running" : "paused");
+      ids.hueValue.textContent = `${shift} deg`; ids.accentValue.textContent = `${Math.round(sat * 100)}%`; ids.blurValue.textContent = `${quiet ? Math.max(8, blur - 10) : blur} px`;
+      ids.glowValue.textContent = `${Math.round((quiet ? Math.max(.12, glow * .45) : glow) * 100)}%`; ids.radiusValue.textContent = `${radius} px`; ids.densityValue.textContent = `${Math.round(density * 100)}%`;
+      ids.swCanvas.style.background = p.canvas2; ids.swSurface.style.background = quiet ? "rgba(17,23,36,.82)" : p.surfaceStrong; ids.swAccent.style.background = accent; ids.swAccent2.style.background = accent2; ids.swSuccess.style.background = success;
+    }
+    document.querySelectorAll(".preset").forEach((button) => button.addEventListener("click", () => {
+      current = button.dataset.preset; document.querySelectorAll(".preset").forEach((node) => node.classList.toggle("active", node === button)); apply();
+    }));
+    [ids.hue, ids.accent, ids.blur, ids.glow, ids.radius, ids.density, ids.motion, ids.quiet].forEach((node) => { node.addEventListener("input", apply); node.addEventListener("change", apply); });
+    apply();
+  </script>
+</body>
+</html>

@@ -495,11 +495,21 @@ def start_indexing():
         
     mode = data.get('mode', 'new')
     registry = load_playlists_registry()
-    conflict = find_playlist_conflicts(data.get("name", ""), data["playlist_url"], registry)
+    duplicate_check = check_duplicate_playlist(data.get("name", ""), data["playlist_url"], registry)
+    conflict = duplicate_check.get("conflict") or {
+        "has_conflict": bool(duplicate_check.get("is_duplicate")),
+        "exact_id_match": duplicate_check.get("existing_playlist"),
+        "name_matches": [duplicate_check["existing_playlist"]] if duplicate_check.get("existing_playlist") else [],
+        "recommended_replace_id": (
+            duplicate_check.get("existing_playlist", {}).get("id")
+            if duplicate_check.get("existing_playlist")
+            else None
+        ),
+    }
     replace_playlist_id = str(data.get("replace_playlist_id") or "").strip() or None
 
-    if mode == 'new' and conflict['has_conflict']:
-        existing_playlist = conflict.get("exact_id_match")
+    if mode == 'new' and duplicate_check['is_duplicate']:
+        existing_playlist = duplicate_check.get("existing_playlist") or conflict.get("exact_id_match")
         if existing_playlist is None and len(conflict.get("name_matches", [])) == 1:
             existing_playlist = conflict["name_matches"][0]
         return jsonify({
@@ -868,6 +878,22 @@ def find_playlist_conflicts(name: str, youtube_url: str, registry: Optional[Dict
         "recommended_replace_id": recommended_replace_id,
         "exact_id_match": exact_id_match,
         "name_matches": name_matches,
+    }
+
+
+def check_duplicate_playlist(name: str, youtube_url: str, registry: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    Backward-compatible wrapper around the richer playlist conflict detection.
+    """
+    conflict = find_playlist_conflicts(name, youtube_url, registry)
+    existing_playlist = conflict.get("exact_id_match")
+    if existing_playlist is None and len(conflict.get("name_matches", [])) == 1:
+        existing_playlist = conflict["name_matches"][0]
+
+    return {
+        "is_duplicate": conflict["has_conflict"],
+        "existing_playlist": existing_playlist,
+        "conflict": conflict,
     }
 
 
