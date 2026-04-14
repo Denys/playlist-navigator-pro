@@ -139,3 +139,8 @@ class TestMetadataEnricher:
         assert "tags" in result
         assert "youtube_tags" in result["tags"]
         assert "auto_generated" in result["tags"]
+
+    def test_process_video_serializes_sync_status_timestamp(self, enricher, mock_video_v1):
+        """Enriched videos should emit JSON-safe sync timestamps."""
+        result = enricher.process_video(mock_video_v1)
+        assert isinstance(result["sync_status"]["last_verified"], str)

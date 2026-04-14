@@ -51,6 +51,8 @@ let activeFolderFilter = localStorage.getItem(KEYS.activeFolder) || "all";
 let searchHistory = loadLocalArray(KEYS.searchHistory);
 let savedSearches = loadLocalArray(KEYS.savedSearches);
 let searchTimeout;
+let previewState = { validatedUrl: "", payload: null };
+let indexRequestState = { mode: "new", replacePlaylistId: null, conflict: null };
 
 function parseDate(value) {
     if (!value) return null;
@@ -251,18 +253,54 @@ function bindColorSelection() {
 }
 
 function bindIndexerForm() {
+    const playlistUrlInput = document.getElementById("playlistUrl");
+    const previewButton = document.getElementById("previewButton");
+    const playlistNameInput = document.getElementById("playlistName");
+
+    const invalidatePreview = (force = false) => {
+        const currentUrl = normalizePlaylistUrl(playlistUrlInput?.value || "");
+        if (force || currentUrl !== previewState.validatedUrl) {
+            previewState = { validatedUrl: "", payload: null };
+            indexRequestState = { mode: "new", replacePlaylistId: null, conflict: null };
+            setIndexSubmitEnabled(false);
+            setPreviewHint("Preview the playlist before indexing.");
+        }
+    };
+
+    playlistUrlInput?.addEventListener("input", invalidatePreview);
+    playlistNameInput?.addEventListener("input", () => invalidatePreview(true));
+    previewButton?.addEventListener("click", previewPlaylist);
+
+    setIndexSubmitEnabled(false);
     document.getElementById("indexForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         document.getElementById("statusPanel")?.classList.remove("hidden");
-        const playlistUrl = document.getElementById("playlistUrl").value;
+        const playlistUrl = normalizePlaylistUrl(document.getElementById("playlistUrl").value);
         const playlistName = document.getElementById("playlistName").value;
+        if (!playlistUrl || previewState.validatedUrl !== playlistUrl) {
+            return showError("Preview the playlist before indexing.");
+        }
         try {
             const response = await fetch("/api/index", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ playlist_url: playlistUrl, name: playlistName, color_scheme: selectedColor })
+                body: JSON.stringify({
+                    playlist_url: playlistUrl,
+                    name: playlistName,
+                    color_scheme: selectedColor,
+                    mode: indexRequestState.mode,
+                    replace_playlist_id: indexRequestState.replacePlaylistId
+                })
             });
             const data = await response.json();
+            if (!response.ok) {
+                if (response.status === 409 && data.conflict) {
+                    const payload = Object.assign({}, previewState.payload || {}, { conflict: data.conflict });
+                    previewState = { validatedUrl: playlistUrl, payload };
+                    renderPreviewSuccess(payload);
+                }
+                return showError(data.error || "Indexing failed.");
+            }
             if (data.error) return showError(data.error);
             monitorProgress(data.job_id);
         } catch (error) {
@@ -276,26 +314,207 @@ function monitorProgress(jobId) {
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
     const statusMessage = document.getElementById("statusMessage");
+    let terminalState = false;
     eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (progressBar) progressBar.style.width = `${data.progress}%`;
         if (progressText) progressText.textContent = `${data.progress}%`;
         if (statusMessage) statusMessage.textContent = data.message;
         if (data.status === "complete") {
+            terminalState = true;
             eventSource.close();
             if (statusMessage) statusMessage.innerHTML = '<span class="text-green-400">Indexing complete.</span>';
             updateStats();
         } else if (data.status === "error") {
+            terminalState = true;
             eventSource.close();
             showError(data.message);
         }
     };
-    eventSource.onerror = () => { eventSource.close(); showError("Connection lost"); };
+    eventSource.onerror = () => {
+        if (terminalState) return;
+        if (statusMessage) {
+            statusMessage.innerHTML = '<span class="text-amber-400">Connection interrupted, retrying…</span>';
+        }
+    };
 }
 
 function showError(message) {
     const el = document.getElementById("statusMessage");
     if (el) el.innerHTML = `<span class="text-red-400">Error: ${escapeHtml(message)}</span>`;
+}
+
+function normalizePlaylistUrl(value) {
+    return String(value || "").trim();
+}
+
+function setPreviewHint(message) {
+    const hint = document.getElementById("previewHint");
+    if (hint) hint.textContent = message;
+}
+
+async function previewPlaylist() {
+    const playlistUrlInput = document.getElementById("playlistUrl");
+    const previewButton = document.getElementById("previewButton");
+    const playlistNameInput = document.getElementById("playlistName");
+    const playlistUrl = normalizePlaylistUrl(playlistUrlInput?.value || "");
+    if (!playlistUrl) {
+        renderPreviewError("Enter a playlist URL first.");
+        return;
+    }
+
+    if (previewButton) {
+        previewButton.disabled = true;
+        previewButton.textContent = "Previewing...";
+    }
+    renderPreviewLoading();
+
+    try {
+        const response = await fetch("/api/playlist-preview", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                playlist_url: playlistUrl,
+                name: playlistNameInput?.value || ""
+            })
+        });
+        const data = await response.json();
+        if (!response.ok || data.error) {
+            renderPreviewError(data.error || "Preview failed.");
+            return;
+        }
+
+        previewState = { validatedUrl: playlistUrl, payload: data };
+        if (playlistNameInput && !playlistNameInput.value.trim()) {
+            playlistNameInput.value = data.title || "";
+        }
+        renderPreviewSuccess(data);
+    } catch (error) {
+        renderPreviewError(error.message || "Preview failed.");
+    } finally {
+        if (previewButton) {
+            previewButton.disabled = false;
+            previewButton.textContent = "Preview Playlist";
+        }
+    }
+}
+
+function setIndexSubmitEnabled(enabled) {
+    const btn = document.getElementById("indexSubmitButton");
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.classList.toggle("opacity-50", !enabled);
+    btn.classList.toggle("cursor-not-allowed", !enabled);
+}
+
+function renderPreviewLoading() {
+    const panel = document.getElementById("previewPanel");
+    const content = document.getElementById("previewContent");
+    if (!panel || !content) return;
+    panel.classList.remove("hidden");
+    content.innerHTML = '<span class="text-white/70">Loading playlist preview...</span>';
+}
+
+function renderPreviewError(message) {
+    previewState = { validatedUrl: "", payload: null };
+    indexRequestState = { mode: "new", replacePlaylistId: null, conflict: null };
+    setIndexSubmitEnabled(false);
+    setPreviewHint("Preview the playlist before indexing.");
+    const panel = document.getElementById("previewPanel");
+    const content = document.getElementById("previewContent");
+    if (!panel || !content) return;
+    panel.classList.remove("hidden");
+    content.innerHTML = `<span class="text-red-400">${escapeHtml(message)}</span>`;
+}
+
+function renderPreviewSuccess(data) {
+    const panel = document.getElementById("previewPanel");
+    const content = document.getElementById("previewContent");
+    if (!panel || !content) return;
+    panel.classList.remove("hidden");
+    indexRequestState = { mode: "new", replacePlaylistId: null, conflict: data.conflict || null };
+    const videos = Array.isArray(data.sample_videos) ? data.sample_videos : [];
+    const items = videos.map((video, idx) => `
+        <li class="mb-1">
+            <span class="text-white/50">${idx + 1}.</span>
+            <span>${escapeHtml(video.title || "")}</span>
+        </li>
+    `).join("");
+    const conflict = data.conflict || { has_conflict: false, name_matches: [] };
+    const conflictMatches = [];
+    if (conflict.exact_id_match) {
+        conflictMatches.push(conflict.exact_id_match);
+    }
+    (Array.isArray(conflict.name_matches) ? conflict.name_matches : []).forEach((match) => {
+        if (!conflictMatches.some((item) => item && item.id === match.id)) {
+            conflictMatches.push(match);
+        }
+    });
+    const replaceAction = conflict.recommended_replace_id ? `
+        <button
+            type="button"
+            id="previewReplaceButton"
+            data-replace-playlist-id="${escapeHtml(conflict.recommended_replace_id)}"
+            class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-400/30 bg-amber-500/10 text-amber-100 hover:bg-amber-500/20 transition-colors"
+        >
+            Replace Existing Playlist
+        </button>
+    ` : "";
+    const conflictHtml = conflict.has_conflict ? `
+        <div class="rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+            <div class="font-semibold">Potential duplicate detected</div>
+            <div class="mt-1 text-amber-50/80">
+                ${conflict.reason === "playlist_id"
+                    ? "This YouTube playlist is already indexed."
+                    : "A playlist with the same display name already exists."}
+            </div>
+            <ul class="mt-2 space-y-1 text-xs text-amber-50/80">
+                ${conflictMatches.map((match) => `
+                    <li>
+                        <span class="font-medium">${escapeHtml(match.name || match.id || "Existing playlist")}</span>
+                        <span class="text-amber-50/60">(${escapeHtml(match.id || "")})</span>
+                    </li>
+                `).join("")}
+            </ul>
+            ${replaceAction || '<div class="mt-3 text-xs text-amber-50/70">Multiple conflicts found. Rename the playlist or clean up duplicates before indexing.</div>'}
+        </div>
+    ` : "";
+    content.innerHTML = `
+        <div class="space-y-2">
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/60">
+                <span>ID: <span class="text-white/90">${escapeHtml(data.playlist_id || "")}</span></span>
+                <span>Owner: <span class="text-white/90">${escapeHtml(data.channel || "")}</span></span>
+                <span>Videos: <span class="text-white/90">${Number(data.video_count || 0)}</span></span>
+            </div>
+            <div class="text-base font-semibold text-white">${escapeHtml(data.title || "")}</div>
+            ${conflictHtml}
+            <div>
+                <div class="text-xs uppercase tracking-wide text-white/50 mb-1">First videos</div>
+                <ol class="text-sm text-white/80">${items || '<li>No sample videos returned.</li>'}</ol>
+            </div>
+        </div>
+    `;
+
+    if (conflict.has_conflict) {
+        setIndexSubmitEnabled(false);
+        setPreviewHint("Conflict detected. Choose replace or rename the playlist.");
+        const replaceButton = document.getElementById("previewReplaceButton");
+        replaceButton?.addEventListener("click", () => {
+            indexRequestState = {
+                mode: "overwrite",
+                replacePlaylistId: replaceButton.dataset.replacePlaylistId || null,
+                conflict
+            };
+            setIndexSubmitEnabled(true);
+            setPreviewHint(`Replace mode armed for ${replaceButton.dataset.replacePlaylistId || "existing playlist"}.`);
+            replaceButton.disabled = true;
+            replaceButton.textContent = "Replace Mode Selected";
+        });
+        return;
+    }
+
+    setIndexSubmitEnabled(true);
+    setPreviewHint(`Preview ready: ${data.playlist_id}`);
 }
 
 async function loadPlaylistsGrid() {
@@ -415,7 +634,7 @@ function renderPlaylists() {
     setPlaylistsView(localStorage.getItem(KEYS.playlistsView) || "grid");
 
     grid.querySelectorAll("[data-open-playlist]").forEach((el) => {
-        el.addEventListener("click", () => window.open(`/playlist/${el.dataset.openPlaylist}`, "_blank"));
+        el.addEventListener("click", () => window.open(`/playlist/${encodeURIComponent(el.dataset.openPlaylist)}`, "_blank"));
     });
 
     grid.querySelectorAll(".playlist-folder-select").forEach((select) => {

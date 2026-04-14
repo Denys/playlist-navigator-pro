@@ -22,7 +22,7 @@ from execution.metadata_enricher import MetadataEnricher
 from execution.delta_sync import DeltaSync
 from execution.tag_manager import TagManager
 from execution.video_store_api import VideoStoreAPI
-from execution.utils import check_duplicate_playlist
+from execution.utils import extract_playlist_id_from_url
 from execution.models import VideoData
 from execution.io_utils import clean_secret_value, get_env_secret, read_json_file, write_json_atomic
 from execution.db import SQLiteStore
@@ -91,6 +91,49 @@ def get_data_backend() -> str:
     """Current data backend mode: json | sqlite."""
     backend = str(load_runtime_config().get("data_backend", "sqlite")).strip().lower()
     return backend if backend in {"json", "sqlite"} else "sqlite"
+
+
+def fetch_playlist_preview(playlist_url: str) -> Dict[str, Any]:
+    playlist_url = str(playlist_url or "").strip()
+    if not playlist_url:
+        raise ValueError("playlist_url is required")
+
+    api_key = get_youtube_api_key()
+    if not api_key:
+        raise ValueError("YouTube API key is not configured")
+
+    from youtube_api_extractor import YouTubeAPIExtractor
+
+    extractor = YouTubeAPIExtractor(api_key)
+    playlist_id = extractor.extract_playlist_id(playlist_url)
+    info = extractor.get_playlist_info(playlist_id)
+    request = extractor.youtube.playlistItems().list(
+        part="snippet,contentDetails",
+        playlistId=playlist_id,
+        maxResults=3,
+    )
+    response = request.execute()
+
+    sample_videos = []
+    for item in response.get("items", []):
+        snippet = item.get("snippet", {})
+        resource = snippet.get("resourceId", {})
+        content = item.get("contentDetails", {})
+        video_id = resource.get("videoId") or content.get("videoId") or ""
+        sample_videos.append({
+            "title": snippet.get("title", ""),
+            "video_id": video_id,
+            "url": f"https://www.youtube.com/watch?v={video_id}" if video_id else "",
+            "channel": snippet.get("channelTitle", ""),
+        })
+
+    return {
+        "playlist_id": playlist_id,
+        "title": info.get("title", ""),
+        "channel": info.get("channel", ""),
+        "video_count": int(info.get("video_count", 0) or 0),
+        "sample_videos": sample_videos,
+    }
 
 
 def save_runtime_config(config_data: Dict[str, Any]):
@@ -450,16 +493,29 @@ def start_indexing():
     if not data.get('playlist_url') or not data.get('name'):
         return jsonify({'error': 'Missing playlist_url or name'}), 400
         
-    # Check for duplicates if mode is not explicit overwrite
     mode = data.get('mode', 'new')
-    if mode == 'new':
-        dup_check = check_duplicate_playlist(data['playlist_url'])
-        if dup_check['is_duplicate']:
-            return jsonify({
-                'error': 'Duplicate playlist detected',
-                'is_duplicate': True,
-                'existing_playlist': dup_check['existing_playlist']
-            }), 409
+    registry = load_playlists_registry()
+    conflict = find_playlist_conflicts(data.get("name", ""), data["playlist_url"], registry)
+    replace_playlist_id = str(data.get("replace_playlist_id") or "").strip() or None
+
+    if mode == 'new' and conflict['has_conflict']:
+        existing_playlist = conflict.get("exact_id_match")
+        if existing_playlist is None and len(conflict.get("name_matches", [])) == 1:
+            existing_playlist = conflict["name_matches"][0]
+        return jsonify({
+            'error': 'Playlist already exists. Choose replace or rename the playlist.',
+            'is_duplicate': True,
+            'existing_playlist': existing_playlist,
+            'conflict': conflict,
+        }), 409
+
+    if mode == 'overwrite':
+        if replace_playlist_id is None:
+            replace_playlist_id = conflict.get("recommended_replace_id")
+        if replace_playlist_id is not None:
+            target = next((p for p in registry.get("playlists", []) if p.get("id") == replace_playlist_id), None)
+            if not target:
+                return jsonify({'error': 'replace_playlist_id not found'}), 400
     
     job_id = str(uuid.uuid4())[:8]
     job = IndexingJob(
@@ -469,6 +525,7 @@ def start_indexing():
         data.get('color_scheme', 'purple')
     )
     job.mode = mode # Store mode
+    job.replace_playlist_id = replace_playlist_id
     
     jobs[job_id] = job
     
@@ -478,6 +535,26 @@ def start_indexing():
     thread.start()
     
     return jsonify({'job_id': job_id, 'status': 'processing'})
+
+
+@app.route('/api/playlist-preview', methods=['POST'])
+def playlist_preview():
+    data = request.get_json(silent=True) or {}
+    playlist_url = str(data.get("playlist_url") or "").strip()
+    if not playlist_url:
+        return jsonify({"error": "playlist_url is required"}), 400
+
+    try:
+        preview = fetch_playlist_preview(playlist_url)
+        requested_name = str(data.get("name") or preview.get("title") or "").strip()
+        preview["conflict"] = find_playlist_conflicts(requested_name, playlist_url)
+        return jsonify(preview)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/sync/delta/<playlist_id>', methods=['POST'])
 def delta_sync_playlist(playlist_id):
@@ -560,6 +637,7 @@ def job_status(job_id):
             return
         
         job = jobs[job_id]
+        yield "retry: 1000\n\n"
         
         while job.status not in ['complete', 'error']:
             data = {
@@ -587,8 +665,14 @@ def job_status(job_id):
             }
         
         yield f"data: {json.dumps(data)}\n\n"
-    
-    return Response(generate(), mimetype='text/event-stream')
+
+    response = Response(generate(), mimetype='text/event-stream')
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, no-transform'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    response.headers['X-Accel-Buffering'] = 'no'
+    response.headers['Connection'] = 'keep-alive'
+    return response
 
 
 @app.route('/api/quota')
@@ -674,7 +758,8 @@ def filter_video_list(
 
     if query:
         query = query.lower().strip()
-        tokens = [t for t in re.split(r"\s+", query) if t]
+        raw_tokens = [t for t in re.split(r"\s+", query) if t]
+        tokens = [t for t in raw_tokens if re.search(r"[0-9a-zA-Z\u0080-\uffff]", t)]
 
         def token_in_video(v: Dict[str, Any], token: str) -> bool:
             if "title" in fields and token in v.get("title", "").lower():
@@ -717,7 +802,103 @@ def _get_video_tags(video):
         return tags.get('combined', [])
     elif isinstance(tags, list):
         return tags
-    return []
+    return []    
+
+
+def _slugify_playlist_name(name: str) -> str:
+    text = re.sub(r"[^a-z0-9]+", "_", (name or "").strip().lower())
+    text = text.strip("_")
+    return text or "playlist"
+
+
+def build_playlist_record_id(name: str, youtube_url: str) -> str:
+    playlist_id = extract_playlist_id_from_url(youtube_url or "")
+    if playlist_id:
+        return playlist_id
+    return _slugify_playlist_name(name)
+
+
+def normalize_playlist_name(name: str) -> str:
+    text = re.sub(r"[^a-z0-9]+", " ", (name or "").strip().lower())
+    return " ".join(text.split())
+
+
+def find_playlist_conflicts(name: str, youtube_url: str, registry: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    registry = registry if isinstance(registry, dict) else load_playlists_registry()
+    playlists = registry.get("playlists", []) if isinstance(registry, dict) else []
+    requested_playlist_id = extract_playlist_id_from_url(youtube_url or "")
+    requested_name = normalize_playlist_name(name)
+
+    exact_id_match = None
+    name_matches: List[Dict[str, Any]] = []
+    seen_name_match_ids = set()
+
+    for playlist in playlists:
+        if not isinstance(playlist, dict):
+            continue
+        existing_id = str(playlist.get("id", "") or "").strip()
+        existing_url_id = extract_playlist_id_from_url(playlist.get("youtube_url", "") or "")
+
+        if requested_playlist_id and (existing_url_id == requested_playlist_id or existing_id == requested_playlist_id):
+            exact_id_match = playlist
+
+        if requested_name and normalize_playlist_name(playlist.get("name", "")) == requested_name:
+            match_id = existing_id or f"name:{playlist.get('name', '')}"
+            if match_id not in seen_name_match_ids:
+                name_matches.append(playlist)
+                seen_name_match_ids.add(match_id)
+
+    recommended_replace_id = None
+    reason = None
+    if exact_id_match:
+        recommended_replace_id = exact_id_match.get("id")
+        reason = "playlist_id"
+    elif len(name_matches) == 1:
+        recommended_replace_id = name_matches[0].get("id")
+        reason = "name"
+    elif name_matches:
+        reason = "name"
+
+    return {
+        "has_conflict": bool(exact_id_match or name_matches),
+        "reason": reason,
+        "requested_playlist_id": requested_playlist_id or None,
+        "requested_name": name or "",
+        "normalized_name": requested_name,
+        "recommended_replace_id": recommended_replace_id,
+        "exact_id_match": exact_id_match,
+        "name_matches": name_matches,
+    }
+
+
+def _path_within_output_root(path: str) -> bool:
+    if not path:
+        return False
+    output_root = os.path.abspath(os.path.join(get_app_root(), "output"))
+    abs_path = os.path.abspath(path)
+    try:
+        return os.path.commonpath([output_root, abs_path]) == output_root
+    except ValueError:
+        return False
+
+
+def _safe_remove_file(path: str):
+    if not path or not _path_within_output_root(path):
+        return
+    if os.path.exists(path):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+
+
+def cleanup_playlist_artifacts(playlist: Dict[str, Any]):
+    if not isinstance(playlist, dict):
+        return
+    output_dir = str(playlist.get("output_dir", "") or "")
+    playlist_id = str(playlist.get("id", "") or "")
+    if output_dir and playlist_id:
+        _safe_remove_file(os.path.join(output_dir, f"{playlist_id}_data.json"))
 
 
 
@@ -1763,7 +1944,15 @@ def process_indexing_job(job):
         output_dir, files = indexer.generate_files(job.name, playlist_data)
         
         # Register playlist
-        register_playlist(job.name, output_dir, files, playlist_data, job.color_scheme, job.playlist_url)
+        register_playlist(
+            job.name,
+            output_dir,
+            files,
+            playlist_data,
+            job.color_scheme,
+            job.playlist_url,
+            replace_playlist_id=getattr(job, "replace_playlist_id", None),
+        )
         
         job.status = "complete"
         job.progress = 100
@@ -1777,16 +1966,26 @@ def process_indexing_job(job):
         traceback.print_exc()
 
 
-def register_playlist(name, output_dir, files, playlist_data, color_scheme, youtube_url):
+def register_playlist(name, output_dir, files, playlist_data, color_scheme, youtube_url, replace_playlist_id: Optional[str] = None):
     """Register a newly indexed playlist."""
     registry = load_playlists_registry()
     
-    # Create safe ID
-    safe_id = name.lower().replace(' ', '_').replace('-', '_')
-    
-    # Check if exists
-    existing_idx = next((i for i, p in enumerate(registry.get('playlists', [])) if p.get('id') == safe_id), None)
-    existing = registry.get("playlists", [])[existing_idx] if existing_idx is not None else None
+    # Prefer stable YouTube playlist IDs over display names.
+    safe_id = build_playlist_record_id(name, youtube_url)
+    playlists = registry.setdefault("playlists", [])
+    replace_target = next((p for p in playlists if p.get("id") == replace_playlist_id), None) if replace_playlist_id else None
+
+    if replace_target and replace_target.get("id") != safe_id:
+        if get_data_backend() == "sqlite":
+            get_sqlite_store().delete_playlist(replace_target.get("id", ""))
+        else:
+            cleanup_playlist_artifacts(replace_target)
+        registry["playlists"] = [p for p in playlists if p.get("id") != replace_target.get("id")]
+        playlists = registry["playlists"]
+
+    existing_idx = next((i for i, p in enumerate(playlists) if p.get('id') == safe_id), None)
+    existing = playlists[existing_idx] if existing_idx is not None else None
+    preserved = existing or replace_target or {}
     
     playlist_info = {
         'id': safe_id,
@@ -1799,17 +1998,17 @@ def register_playlist(name, output_dir, files, playlist_data, color_scheme, yout
         'md_file': next((f for f in files if f.endswith('.md')), ''),
         'color_scheme': color_scheme,
         'youtube_url': youtube_url,
-        'folder': existing.get("folder") if isinstance(existing, dict) else None
+        'folder': preserved.get("folder") if isinstance(preserved, dict) else None
     }
     
     if existing_idx is not None:
-        registry['playlists'][existing_idx] = playlist_info
+        playlists[existing_idx] = playlist_info
     else:
-        registry.setdefault("playlists", []).append(playlist_info)
+        playlists.append(playlist_info)
 
     # Update totals
-    registry['total_playlists'] = len(registry.get('playlists', []))
-    registry['total_videos'] = sum(int(p.get('video_count', 0) or 0) for p in registry.get('playlists', []))
+    registry['total_playlists'] = len(playlists)
+    registry['total_videos'] = sum(int(p.get('video_count', 0) or 0) for p in playlists)
     registry['last_updated'] = datetime.datetime.utcnow().isoformat() + 'Z'
     
     # Save registry

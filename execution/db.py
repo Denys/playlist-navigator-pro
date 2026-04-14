@@ -3,6 +3,7 @@ import os
 import sqlite3
 from collections import Counter
 from typing import Any, Dict, List, Optional, Tuple
+from execution.io_utils import dumps_json
 
 
 class SQLiteStore:
@@ -105,6 +106,11 @@ class SQLiteStore:
                 ),
             )
 
+    def delete_playlist(self, playlist_id: str):
+        with self._connect() as conn:
+            conn.execute("DELETE FROM videos WHERE playlist_id=?", (playlist_id,))
+            conn.execute("DELETE FROM playlists WHERE id=?", (playlist_id,))
+
     def list_playlists(self) -> List[Dict[str, Any]]:
         with self._connect() as conn:
             rows = conn.execute(
@@ -166,9 +172,9 @@ class SQLiteStore:
                         v.get("notes"),
                         v.get("progress_status"),
                         v.get("ai_summary"),
-                        json.dumps(tags, ensure_ascii=False),
-                        json.dumps(metadata, ensure_ascii=False),
-                        json.dumps(v, ensure_ascii=False),
+                        dumps_json(tags),
+                        dumps_json(metadata),
+                        dumps_json(v),
                     ),
                 )
 
@@ -249,9 +255,9 @@ class SQLiteStore:
                     video.get("notes"),
                     video.get("progress_status"),
                     video.get("ai_summary"),
-                    json.dumps(tags, ensure_ascii=False),
-                    json.dumps(metadata, ensure_ascii=False),
-                    json.dumps(video, ensure_ascii=False),
+                    dumps_json(tags),
+                    dumps_json(metadata),
+                    dumps_json(video),
                 ),
             )
 
@@ -300,4 +306,3 @@ class SQLiteStore:
             "categories": [{"category": c, "count": n} for c, n in categories.most_common()],
             "progress": dict(progress),
         }
-

@@ -1,6 +1,6 @@
 
 import re
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from typing import List, Dict, Any, Optional
 from enum import Enum
 
@@ -234,7 +234,7 @@ class MetadataEnricher:
         if 'sync_status' not in v2_video:
             v2_video['sync_status'] = {
                 'exists_at_source': True,
-                'last_verified': datetime.utcnow()
+                'last_verified': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
             }
         
         # Ensure optional fields are present for Pydantic if missing

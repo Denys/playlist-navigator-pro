@@ -1,6 +1,6 @@
 // Playlist Navigator Pro — Service Worker
 // Cache version: bump this to invalidate all caches
-const CACHE_VERSION = 'pnav-v3';
+const CACHE_VERSION = 'pnav-v4';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const API_CACHE = `${CACHE_VERSION}-api`;
 
@@ -52,12 +52,20 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     const { request } = event;
     const url = new URL(request.url);
+    const accept = request.headers.get('Accept') || '';
 
     // Skip non-GET requests
     if (request.method !== 'GET') return;
 
     // Skip Chrome extension requests and other non-http
     if (!url.protocol.startsWith('http')) return;
+
+    // Never cache or proxy SSE status streams through the service worker.
+    // EventSource expects a live streaming response and cache cloning can break it.
+    if (url.pathname.startsWith('/api/status/') || accept.includes('text/event-stream')) {
+        event.respondWith(fetch(request));
+        return;
+    }
 
     // API requests: network-first, cache fallback
     if (url.pathname.startsWith('/api/')) {

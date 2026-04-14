@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 YouTube Data API v3 integration for playlist indexing.
 Extracts playlist video data with enhanced metadata.
@@ -7,6 +7,8 @@ Extracts playlist video data with enhanced metadata.
 import re
 from typing import List, Dict, Optional
 from urllib.parse import urlparse, parse_qs
+
+from execution.io_utils import console_print
 
 
 class YouTubeAPIExtractor:
@@ -84,7 +86,7 @@ class YouTubeAPIExtractor:
         next_page_token = None
         page_count = 0
         
-        print(f"Fetching playlist videos from YouTube API...")
+        console_print("Fetching playlist videos from YouTube API...")
         
         # Fetch all playlist items (paginated)
         while True:
@@ -118,22 +120,22 @@ class YouTubeAPIExtractor:
                     
                     videos.append(video_data)
                 
-                print(f"  Page {page_count}: Fetched {len(response['items'])} videos (Total: {len(videos)})")
+                console_print(f"  Page {page_count}: Fetched {len(response['items'])} videos (Total: {len(videos)})")
                 
                 next_page_token = response.get('nextPageToken')
                 if not next_page_token:
                     break
                     
             except self.HttpError as e:
-                print(f"API Error: {e}")
+                console_print(f"API Error: {e}")
                 raise
         
         # Optionally fetch full video descriptions (costs more quota)
         if include_descriptions and videos:
-            print(f"Fetching detailed video information...")
+            console_print("Fetching detailed video information...")
             videos = self._enrich_video_details(videos)
         
-        print(f"✓ Successfully fetched {len(videos)} videos")
+        console_print(f"Successfully fetched {len(videos)} videos")
         return videos
     
     def _enrich_video_details(self, videos: List[Dict]) -> List[Dict]:
@@ -187,10 +189,10 @@ class YouTubeAPIExtractor:
                         # Tags
                         video['tags'] = snippet.get('tags', [])
                 
-                print(f"  Enriched {len(batch)} videos (batch {i//batch_size + 1})")
+                console_print(f"  Enriched {len(batch)} videos (batch {i//batch_size + 1})")
                 
             except self.HttpError as e:
-                print(f"Warning: Could not enrich batch {i//batch_size + 1}: {e}")
+                console_print(f"Warning: Could not enrich batch {i//batch_size + 1}: {e}")
                 continue
         
         return videos
@@ -228,7 +230,7 @@ class YouTubeAPIExtractor:
             }
             
         except self.HttpError as e:
-            print(f"Warning: Could not fetch playlist info: {e}")
+            console_print(f"Warning: Could not fetch playlist info: {e}")
             return {}
 
 
@@ -237,7 +239,7 @@ def test_api():
     import sys
     
     if len(sys.argv) < 3:
-        print("Usage: python youtube_api_extractor.py <API_KEY> <PLAYLIST_URL>")
+        console_print("Usage: python youtube_api_extractor.py <API_KEY> <PLAYLIST_URL>")
         sys.exit(1)
     
     api_key = sys.argv[1]
@@ -247,24 +249,25 @@ def test_api():
     
     # Extract playlist ID
     playlist_id = extractor.extract_playlist_id(playlist_url)
-    print(f"Playlist ID: {playlist_id}")
+    console_print(f"Playlist ID: {playlist_id}")
     
     # Get playlist info
     info = extractor.get_playlist_info(playlist_id)
-    print(f"\nPlaylist: {info.get('title', 'Unknown')}")
-    print(f"Videos: {info.get('video_count', 0)}")
+    console_print(f"\nPlaylist: {info.get('title', 'Unknown')}")
+    console_print(f"Videos: {info.get('video_count', 0)}")
     
     # Get videos
     videos = extractor.get_playlist_videos(playlist_id, include_descriptions=True)
     
-    print(f"\nFirst video:")
+    console_print("\nFirst video:")
     if videos:
         v = videos[0]
-        print(f"  Title: {v['title']}")
-        print(f"  URL: {v['url']}")
-        print(f"  Channel: {v['channel']}")
-        print(f"  Description: {v.get('description', 'N/A')[:100]}...")
+        console_print(f"  Title: {v['title']}")
+        console_print(f"  URL: {v['url']}")
+        console_print(f"  Channel: {v['channel']}")
+        console_print(f"  Description: {v.get('description', 'N/A')[:100]}...")
 
 
 if __name__ == '__main__':
     test_api()
+

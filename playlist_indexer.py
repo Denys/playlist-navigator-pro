@@ -13,7 +13,10 @@ from markdown_it import MarkdownIt
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from execution.io_utils import clean_secret_value, get_env_secret
+from execution.io_utils import clean_secret_value, get_env_secret, console_print
+
+
+print = console_print
 
 
 def resolve_youtube_api_key(config: Dict[str, Any], config_file_path: str) -> str:
@@ -310,19 +313,19 @@ class PlaylistIndexer:
                     include_descriptions=True
                 )
                 
-                print(f"✓ Successfully extracted {len(videos)} videos via API")
+                print(f"Successfully extracted {len(videos)} videos via API")
                 return videos
                 
             except ImportError:
-                print("⚠ YouTube API client not installed. Falling back to browser automation.")
+                print("YouTube API client not installed. Falling back to browser automation.")
                 print("  To use API, install: pip install google-api-python-client")
             except Exception as e:
-                print(f"⚠ API extraction failed: {e}")
+                print(f"API extraction failed: {e}")
                 print("  Falling back to browser automation...")
         
         # Method 2: Browser automation fallback
         print("\nExtracting playlist using browser automation...")
-        print("⚠ Note: This method doesn't provide video descriptions.")
+        print("Note: This method doesn't provide video descriptions.")
         print("  For better quality, configure YouTube API key in config.json\n")
         
         # This would require browser automation implementation
@@ -848,7 +851,7 @@ def main():
     try:
         output_dir, generated_files = indexer.generate_files(playlist_name, playlist_data)
         
-        print(f"\n✓ Successfully generated playlist index for '{playlist_name}'")
+        print(f"\nSuccessfully generated playlist index for '{playlist_name}'")
         print(f"  Output directory: {output_dir}")
         print(f"  Generated files:")
         for file in generated_files:

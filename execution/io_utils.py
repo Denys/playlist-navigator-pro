@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import sys
 import tempfile
 from typing import Any
 
@@ -77,6 +78,11 @@ def _json_default(obj: Any):
     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
+def dumps_json(payload: Any) -> str:
+    """Serialize payloads with the same datetime-safe default used by file writes."""
+    return json.dumps(payload, ensure_ascii=False, default=_json_default)
+
+
 def write_json_atomic(path: str, payload: Any):
     """
     Atomically write JSON by using a temp file + replace.
@@ -96,3 +102,26 @@ def write_json_atomic(path: str, payload: Any):
                 os.remove(tmp_path)
             except OSError:
                 pass
+
+
+def _coerce_console_text(text: str, stream) -> str:
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    try:
+        text.encode(encoding, errors="strict")
+        return text
+    except UnicodeEncodeError:
+        return text.encode(encoding, errors="replace").decode(encoding, errors="replace")
+
+
+def console_print(*args: Any, sep: str = " ", end: str = "\n", file=None, flush: bool = False):
+    """
+    Print text without letting console encoding mismatches crash the caller.
+    """
+    stream = file if file is not None else sys.stdout
+    text = sep.join(str(arg) for arg in args)
+
+    try:
+        print(text, sep="", end=end, file=stream, flush=flush)
+    except UnicodeEncodeError:
+        safe_text = _coerce_console_text(text, stream)
+        print(safe_text, sep="", end=end, file=stream, flush=flush)

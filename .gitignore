@@ -49,6 +49,7 @@ REALTIME_COMPLETION_STATE.md
 
 # Test caches
 .pytest_cache/
+pytest-cache-files-*/
 testse2e/
 testsfixtures/
 testsintegration/

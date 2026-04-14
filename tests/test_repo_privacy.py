@@ -33,6 +33,7 @@ def test_private_and_generated_artifacts_are_not_tracked():
             "REALTIME_COMPLETION_STATE.md",
             "playlist-navigator-pro.zip",
             "playlist-navigator-pro_green.zip",
+            "pytest-cache-files-*",
         ],
         cwd=REPO_ROOT,
         capture_output=True,
